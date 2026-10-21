@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>أكاديمية SAP S/4HANA & EWM | الدليل المصور وحركة المخزون والتصدير</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Tahoma', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Animated SVG Dashed Arrows */
+    @keyframes arrowFlow {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+    .arrow-animated {
+      stroke-dasharray: 5 3;
+      animation: arrowFlow 1s linear infinite;
+    }
+
+    /* Active Numbered Pin Pulse */
+    @keyframes pulseRing {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.75); }
+      50% { transform: translate(-50%, -50%) scale(1.16); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+    }
+    .step-badge-active {
+      animation: pulseRing 1.6s infinite;
+      background-color: #16a34a !important;
+      color: #ffffff !important;
+      border-color: #ffffff !important;
+      z-index: 40 !important;
+    }
+
+    /* Highlighted Field inside SAP Replica */
+    .sap-field-highlight {
+      outline: 3px solid #f59e0b !important;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.75) !important;
+      background-color: #fef08a !important;
+      color: #0f172a !important;
+      transition: all 0.25s ease;
+    }
+
+    /* Authentic SAP GUI Signature Theme (sapps4app009 1:1 Replica) */
+    .sap-sig-window {
+      background: linear-gradient(180deg, #dce6f2 0%, #edf2f8 25%, #e4ecf5 100%);
+      color: #111827;
+      font-family: Tahoma, Arial, sans-serif;
+      font-size: 11px;
+      user-select: none;
+    }
+    .sap-sig-menubar {
+      background: linear-gradient(180deg, #f3f6fa 0%, #d5e1f0 100%);
+      border-bottom: 1px solid #9eb0c8;
+      color: #1e293b;
+      font-size: 11px;
+    }
+    .sap-sig-toolbar {
+      background: linear-gradient(180deg, #eef3f9 0%, #d8e3f0 100%);
+      border-bottom: 1px solid #9eb0c8;
+    }
+    .sap-sig-titlebar {
+      background: linear-gradient(180deg, #c2d5eb 0%, #abc4e2 100%);
+      border-top: 1px solid #ffffff;
+      border-bottom: 1px solid #7b96b8;
+      color: #0f172a;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .sap-sig-frame {
+      border: 1px solid #9cb1cc;
+      background: rgba(235, 242, 250, 0.8);
+      margin-bottom: 6px;
+      border-radius: 2px;
+    }
+    .sap-sig-frame-title {
+      background: linear-gradient(180deg, #cad9ec 0%, #b8cbe3 100%);
+      border-bottom: 1px solid #9cb1cc;
+      color: #0f172a;
+      font-weight: 700;
+      padding: 2px 6px;
+      font-size: 10.5px;
+    }
+    .sap-sig-input {
+      background: #ffffff;
+      border: 1px solid #7f9db9;
+      height: 18px;
+      padding: 0 4px;
+      font-family: 'JetBrains Mono', Tahoma, monospace;
+      font-size: 10px;
+      color: #000000;
+      display: inline-flex;
+      align-items: center;
+    }
+    .sap-sig-input-focus {
+      background: #fde073 !important;
+      border: 1px solid #b45309 !important;
+      font-weight: 700;
+    }
+    .sap-sig-btn {
+      background: linear-gradient(180deg, #fceabb 0%, #f8d070 48%, #f3c14b 100%);
+      border: 1px solid #9c7a23;
+      color: #111827;
+      font-weight: 700;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 2px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sap-sig-multibtn {
+      background: linear-gradient(180deg, #fff3a8 0%, #f5ce5c 100%);
+      border: 1px solid #8a6d1b;
+      width: 17px;
+      height: 16px;
+      font-size: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #1e293b;
+      border-radius: 1px;
+    }
+    .sap-sig-statusbar {
+      background: linear-gradient(180deg, #dde6f1 0%, #c7d5e6 100%);
+      border-top: 1px solid #8fa6c2;
+      color: #1e293b;
+      font-size: 10px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.5);
+      border-radius: 9999px;
+    }
+
+    .pb-safe {
+      padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col pb-safe transition-colors duration-200">
+
+  <!-- =====================================================================
+       TOP HEADER BAR (RESPONSIVE FOR MOBILE & DESKTOP)
+       ===================================================================== -->
+  <header class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
+      <!-- Brand Logo & Title -->
+      <div class="flex items-center gap-2.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 flex items-center justify-center font-black text-base shadow-md shrink-0">
+          SAP
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <h1 class="font-black text-sm sm:text-lg tracking-tight leading-none">أكاديمية SAP S/4HANA & EWM</h1>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              sapps4app009
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 hidden sm:block">
+            الدليل المصوّر بالأسهم المرقمة لمعاملات المستودع والإنتاج والتصدير (MM / WM / EWM / SD)
+          </p>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation Tabs -->
+      <nav class="hidden lg:flex items-center gap-1 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
+        <button onclick="switchMainTab('explorer')" data-tab="explorer" class="main-nav-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition">
+          <i class="fa-solid fa-magnifying-glass-chart ml-1"></i>شاشات SAP والبحث
+        </button>
+        <button onclick="switchMainTab('lifecycle')" data-tab="lifecycle" class="main-nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+          <i class="fa-solid fa-route ml-1"></i>رحلة المخزون (8 مراحل)
+        </button>
+        <button onclick="switchMainTab('exporthub')" data-tab="exporthub" class="main-nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+          <i class="fa-solid fa-ship ml-1"></i>مركز التصدير والشحن
+        </button>
+        <button onclick="switchMainTab('studio')" data-tab="studio" class="main-nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+          <i class="fa-solid fa-wand-magic-sparkles ml-1"></i>استوديو ترقيم الصور
+        </button>
+        <button onclick="switchMainTab('prompt')" data-tab="prompt" class="main-nav-btn px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+          <i class="fa-brands fa-github ml-1"></i>البرومبت & GitHub/APK
+        </button>
+      </nav>
+
+      <!-- Language & Theme Controls -->
+      <div class="flex items-center gap-1.5">
+        <div class="flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 text-[11px] font-bold">
+          <button onclick="setLanguage('ar')" id="langBtn-ar" class="px-2 py-1 rounded-md bg-amber-500 text-slate-950">AR</button>
+          <button onclick="setLanguage('fr')" id="langBtn-fr" class="px-2 py-1 rounded-md text-slate-300 hover:text-white">FR</button>
+          <button onclick="setLanguage('en')" id="langBtn-en" class="px-2 py-1 rounded-md text-slate-300 hover:text-white">EN</button>
+        </div>
+        <button onclick="toggleDarkMode()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center justify-center text-amber-400 transition" title="تغيير المظهر">
+          <i id="themeIcon" class="fa-solid fa-sun text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       MAIN CONTENT CONTAINER
+       ===================================================================== -->
+  <main class="max-w-7xl w-full mx-auto px-3 sm:px-6 py-4 space-y-5 flex-1">
+
+    <!-- ===================================================================
+         TAB 1: SAP TRANSACTION EXPLORER + 10 UPLOADED SCREENS (sapps4app009)
+         =================================================================== -->
+    <section id="tabSection-explorer" class="space-y-5">
+
+      <!-- Search & Filter Hero Banner -->
+      <div class="bg-gradient-to-l from-slate-900 via-slate-900 to-blue-950 text-white rounded-2xl p-4 sm:p-6 border border-slate-800 shadow-xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+          <div class="lg:col-span-6 space-y-1.5">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[11px] font-bold">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>تم دمج شاشاتك العشر المرفقة من نظام sapps4app009 بالأسهم المرقمة</span>
+            </div>
+            <h2 class="text-lg sm:text-2xl font-black leading-snug">
+              محرك بحث معاملات SAP S/4HANA المصوّر بالأسهم والخطوات
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              ابحث برمز المعاملة (مثل <code class="text-amber-400 font-mono">LS24</code>، <code class="text-amber-400 font-mono">ZPACKCONF</code>، <code class="text-amber-400 font-mono">VL06O</code>، <code class="text-amber-400 font-mono">VT01N</code>، <code class="text-amber-400 font-mono">ZMM4TR021</code>) أو اختر من الشريط أدناه.
+            </p>
+          </div>
+
+          <!-- Instant Search Input & Module Filter Pills -->
+          <div class="lg:col-span-6 space-y-2.5">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input
+                type="text"
+                id="tcodeSearchInput"
+                oninput="handleSearchInput(this.value)"
+                placeholder="ابحث عن T-Code أو اسم الشاشة (LS24, ZPACKCONF, VL06O, MB51...)"
+                class="w-full pr-10 pl-20 py-2.5 rounded-xl bg-slate-800/90 border border-slate-700 text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none focus:border-amber-400"
+              />
+              <button
+                onclick="clearSearchInput()"
+                class="absolute left-2 top-1/2 -translate-y-1/2 px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-[11px] text-slate-200 font-bold"
+              >
+                مسح
+              </button>
+            </div>
+
+            <!-- Module Filter Buttons -->
+            <div class="flex flex-wrap gap-1.5" id="moduleFilterContainer">
+              <button onclick="setModuleFilter('ALL')" data-mod="ALL" class="mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500 text-slate-950 transition">
+                الكل (26)
+              </button>
+              <button onclick="setModuleFilter('USER10')" data-mod="USER10" class="mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500/25 text-emerald-200 border border-emerald-400/40 transition">
+                📸 شاشاتك العشر (10 sapps4app009)
+              </button>
+              <button onclick="setModuleFilter('EXPORT')" data-mod="EXPORT" class="mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-rose-500/25 text-rose-200 border border-rose-400/30 transition">
+                🚢 التصدير والشحن (Delivery & Export)
+              </button>
+              <button onclick="setModuleFilter('EWM')" data-mod="EWM" class="mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/10 text-slate-200 transition">
+                المستودعات (WM/EWM)
+              </button>
+              <button onclick="setModuleFilter('MM/IM')" data-mod="MM/IM" class="mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/10 text-slate-200 transition">
+                المخزون (MM/IM)
+              </button>
+              <button onclick="setModuleFilter('PP')" data-mod="PP" class="mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/10 text-slate-200 transition">
+                الإنتاج والجودة (PP/QM)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================================================================
+           GALLERY BAR OF THE 10 UPLOADED SCREENS FROM sapps4app009
+           ================================================================= -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border-2 border-emerald-500/40 shadow-md space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500 text-slate-950 font-black text-sm flex items-center justify-center shadow shrink-0">
+              10
+            </span>
+            <div>
+              <h3 class="font-black text-xs sm:text-base text-slate-900 dark:text-white flex items-center gap-1.5 flex-wrap">
+                <span>الشاشات العشر المرفقة من نظامكم (<code class="font-mono text-emerald-600 dark:text-emerald-400">sapps4app009</code>)</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                  جاهزة بالأسهم والترقيم
+                </span>
+              </h3>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                اضغط على أي شاشة من الشاشات العشر أدناه لعرضها فوراً مع الأسهم التفاعلية وشرح الحقول:
+              </p>
+            </div>
+          </div>
+
+          <!-- Optional Local Photo File Loader (Persists in IndexedDB) -->
+          <label class="cursor-pointer px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold transition inline-flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-camera"></i>
+            <span>ربط الصور الأصلية (.JPG) من هاتفك/جهازك</span>
+            <input type="file" accept="image/*" multiple class="hidden" onchange="handleBulkTenImagesUpload(event)" />
+          </label>
+        </div>
+
+        <!-- Horizontal Scrollable / Grid Strip for the 10 Screens -->
+        <div id="userTenScreensStrip" class="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- All Transactions Filterable Selector Strip -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs font-bold text-slate-600 dark:text-slate-400">
+            قائمة المعاملات المتاحة (<span id="tcodeCountBadge">26</span> معاملة):
+          </span>
+          <span class="text-[11px] text-slate-500">اسحب أفقياً أو انقر على المعاملة</span>
+        </div>
+        <div id="tcodeCardsGrid" class="flex gap-2.5 overflow-x-auto pb-2">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <!-- =================================================================
+           INTERACTIVE SAP SCREEN + STEP-BY-STEP NUMBERED GUIDE WORKSPACE
+           ================================================================= -->
+      <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+
+        <!-- Active Transaction Header Bar -->
+        <div class="bg-slate-900 text-white px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span id="activeTcodeBadge" class="px-3 py-1 rounded-xl bg-amber-500 text-slate-950 font-mono font-black text-sm sm:text-base shadow">
+              LS24
+            </span>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 id="activeTcodeTitle" class="font-extrabold text-sm sm:text-base">
+                  عرض المخزون التفصيلي للمادة بالرفوف (Stock per Material)
+                </h3>
+                <span id="activeTcodeModule" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  WM/EWM • sapps4app009
+                </span>
+              </div>
+              <p id="activeTcodeFiori" class="text-[11px] text-slate-400 font-mono">
+                ملف الشاشة: 20261019_231146.jpg | SAP System: sapps4app009
+              </p>
+            </div>
+          </div>
+
+          <!-- Toggle Arrows / Mode Buttons -->
+          <div class="flex items-center gap-1.5">
+            <button
+              onclick="togglePhotoVsReplicaMode()"
+              id="togglePhotoModeBtn"
+              class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold transition"
+            >
+              <i class="fa-solid fa-desktop ml-1"></i>تبديل العرض (1:1 / صورة)
+            </button>
+            <button
+              onclick="toggleArrowsVisibility()"
+              class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-[11px] font-bold transition"
+            >
+              <i class="fa-solid fa-location-arrow ml-1"></i>إظهار/إخفاء الأسهم
+            </button>
+          </div>
+        </div>
+
+        <!-- Split Workspace: Left/Top = Annotated SAP Screen | Right/Bottom = Numbered Steps -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 p-3.5 sm:p-5">
+
+          <!-- SAP Screen Canvas with SVG Arrows & Numbered Callout Pins -->
+          <div class="lg:col-span-7 space-y-3">
+            <div id="sapScreenWrapper" class="relative rounded-xl overflow-hidden border-2 border-slate-300 dark:border-slate-700 bg-slate-900 shadow-lg min-h-[410px] sm:min-h-[460px]">
+              <!-- Populated dynamically by JS -->
+            </div>
+
+            <!-- Prev / Next Step Bar under Screen -->
+            <div class="flex items-center justify-between bg-slate-100 dark:bg-slate-800/80 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700">
+              <button onclick="prevStep()" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-xs font-bold shadow-sm transition">
+                <i class="fa-solid fa-arrow-right ml-1"></i>الخطوة السابقة
+              </button>
+              <span id="stepProgressLabel" class="text-xs font-extrabold text-amber-600 dark:text-amber-400">
+                الخطوة 1 من 5
+              </span>
+              <button onclick="nextStep()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold shadow-sm transition">
+                الخطوة التالية<i class="fa-solid fa-arrow-left mr-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step-by-Step Explanation List & Troubleshooting -->
+          <div class="lg:col-span-5 flex flex-col justify-between space-y-4">
+            <div class="space-y-2.5">
+              <h4 class="font-black text-xs sm:text-sm text-slate-700 dark:text-slate-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-list-ol text-amber-500"></i>
+                <span>شرح الخطوات المرقمة بالأسهم على الشاشة:</span>
+              </h4>
+              <div id="stepsListContainer" class="space-y-2 max-h-[340px] overflow-y-auto pl-1">
+                <!-- Populated dynamically by JS -->
+              </div>
+            </div>
+
+            <!-- Practical Summary & Troubleshooting Box -->
+            <div class="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+              <div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/25 text-xs space-y-1">
+                <div class="font-black text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-info"></i>
+                  <span>ملخص العملية وحركة المخزون:</span>
+                </div>
+                <p id="activeTcodeMvtInfo" class="text-slate-700 dark:text-slate-300 leading-relaxed"></p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs space-y-1">
+                <div class="font-black text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                  <span>حل أشهر الأخطاء في هذه الشاشة:</span>
+                </div>
+                <p id="activeTcodeErrorInfo" class="text-slate-700 dark:text-slate-300 leading-relaxed"></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===================================================================
+         TAB 2: END-TO-END INVENTORY LIFECYCLE (PRODUCTION TO EXPORT - 8 STAGES)
+         =================================================================== -->
+    <section id="tabSection-lifecycle" class="hidden space-y-5">
+      <div class="bg-gradient-to-l from-slate-900 to-emerald-950 text-white rounded-2xl p-5 border border-slate-800 shadow-xl space-y-2">
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          دورة حياة المخزون الشاملة (End-to-End Material Flow)
+        </span>
+        <h2 class="text-lg sm:text-2xl font-black">
+          المراحل الـ 8 التي يمر منها المخزون: من استلام الخامات والإنتاج حتى التصدير النهائي
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-300">
+          اضغط على أي مرحلة لاستعراض تحول حالة المخزون، أنواع الحركات (Movement Types)، والمعاملات المرتبطة بها مع فتح شاشاتها مباشرة.
+        </p>
+      </div>
+
+      <!-- 8-Stage Pipeline Selector -->
+      <div id="lifecyclePipelineGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Selected Stage Detailed Card -->
+      <div id="lifecycleStageDetailCard" class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xl">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 3: DELIVERY & EXPORT HUB (SD / LE-SHP / EWM / CUSTOMS)
+         =================================================================== -->
+    <section id="tabSection-exporthub" class="hidden space-y-5">
+      <div class="bg-gradient-to-l from-slate-900 via-rose-950 to-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-xl space-y-2">
+        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+          مركز التصدير والشحن الدولي (SAP Delivery & Export Hub)
+        </span>
+        <h2 class="text-lg sm:text-2xl font-black">
+          الدليل التطبيقي الكامل لعمليات التصدير، التعبئة (ZPACKCONF)، وتتبع الملصقات والجمارك (ZMM4TR021)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-300">
+          يغطي كافة معاملات التصدير من أمر البيع الدولي <code class="text-amber-400">VA01</code> ومراقب التسليمات <code class="text-amber-400">VL06O</code> والالتقاط <code class="text-amber-400">VL06P</code> والتأكيد <code class="text-amber-400">VL06C</code> وقمرة التعبئة <code class="text-amber-400">ZPACKCONF</code> وإنشاء الشحنة <code class="text-amber-400">VT01N</code> حتى الترحيل <code class="text-amber-400">VL02N (PGI 601)</code> والفاتورة الجمركية <code class="text-amber-400">VF01 (F8)</code>.
+        </p>
+      </div>
+
+      <div id="exportHubCardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Populated dynamically by JS -->
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 4: INTERACTIVE SAP SCREENSHOT ANNOTATION STUDIO
+         =================================================================== -->
+    <section id="tabSection-studio" class="hidden space-y-5">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base sm:text-xl font-black">استوديو رفع وترقيم صور SAP الحقيقية بالأسهم</h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              ارفع أي صورة جديدة من SAP، ثم انقر فوق الصورة لإضافة رقم خطوة وسهم تلقائي، واحفظها في المنصة أو انسخ كود JSON.
+            </p>
+          </div>
+          <label class="cursor-pointer px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition inline-flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-upload"></i>
+            <span>رفع صورة شاشة SAP</span>
+            <input type="file" accept="image/*" class="hidden" onchange="handleStudioImageUpload(event)" />
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <!-- Interactive Clickable Canvas -->
+          <div class="lg:col-span-7 space-y-2">
+            <div
+              id="studioCanvasContainer"
+              onclick="handleStudioCanvasClick(event)"
+              class="relative rounded-xl overflow-hidden border-2 border-dashed border-amber-500/50 bg-slate-950 min-h-[340px] flex items-center justify-center cursor-crosshair select-none"
+            >
+              <img
+                id="studioPreviewImg"
+                src="https://placehold.co/900x500/0f172a/f59e0b?text=Click+to+Add+Numbered+SAP+Arrows"
+                alt="SAP Studio Preview"
+                class="w-full h-auto max-h-[420px] object-contain pointer-events-none"
+              />
+              <div id="studioOverlayLayer" class="absolute inset-0 pointer-events-none"></div>
+            </div>
+          </div>
+
+          <!-- Form & JSON Export -->
+          <div class="lg:col-span-5 space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <input id="studioTcodeInput" type="text" placeholder="رمز المعاملة (مثلاً ZPACK02)" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs font-mono" />
+              <input id="studioTitleInput" type="text" placeholder="عنوان الشاشة بالعربية" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs" />
+            </div>
+            <div id="studioStepsList" class="space-y-1.5 max-h-44 overflow-y-auto"></div>
+            <div class="flex gap-2">
+              <button onclick="saveStudioLessonToPlatform()" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">
+                <i class="fa-solid fa-floppy-disk ml-1"></i>حفظ الشاشة في المنصة
+              </button>
+              <button onclick="clearStudioSteps()" class="px-3 py-2 rounded-xl bg-rose-500/15 text-rose-500 font-bold text-xs">
+                مسح النقاط
+              </button>
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-500">كود JSON الجاهز لـ GitHub:</span>
+                <button onclick="copyStudioJson()" class="text-[11px] text-amber-500 font-bold">نسخ الكود</button>
+              </div>
+              <textarea id="studioJsonOutput" readonly rows="4" class="w-full p-2 rounded-xl bg-slate-950 text-emerald-400 font-mono text-[10px] border border-slate-800"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         TAB 5: FINAL ENGINEERING PROMPT + GITHUB PAGES & ANDROID APK GUIDE
+         =================================================================== -->
+    <section id="tabSection-prompt" class="hidden space-y-5">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-xl space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-base sm:text-xl font-black text-amber-500">
+              البرومبت الهندسي النهائي الشامل لبناء وتوسيع منصة SAP S/4HANA & EWM
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              يمكنك نسخ هذا البرومبت الاحترافي واستخدامه في أي وقت لتوليد أو توسيع المنصة، مع خطوات النشر على GitHub Pages وتحويلها إلى تطبيق Android (APK).
+            </p>
+          </div>
+          <button onclick="copyMasterPrompt()" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow transition">
+            <i class="fa-solid fa-copy ml-1"></i>نسخ البرومبت النهائي
+          </button>
+        </div>
+
+        <pre id="masterPromptBox" class="p-4 rounded-xl bg-slate-950 text-emerald-300 font-mono text-xs leading-relaxed overflow-x-auto whitespace-pre-wrap border border-slate-800">أنت مهندس برمجيات أول (Senior Full-Stack & Mobile PWA Architect) ومستشار خبير في نظام SAP S/4HANA (وحدات MM / IM / WM / EWM / PP / QM / SD-LE Export).
+المطلوب: بناء وتطوير منصة تعليمية تفاعلية احترافية قابلة للتوسع تعمل كموقع ويب للحاسوب وتطبيق هاتف Android (PWA / Capacitor APK) وتدعم تعدد اللغات (العربية RTL، الفرنسية، الإنجليزية) في ملف رئيسي واحد (index.html) جاهز للنشر على GitHub Pages.
+
+المتطلبات الوظيفية والتقنية:
+1. محرك بحث معاملات SAP المصوّر بالأسهم والترقيم (Interactive T-Code Visual Explorer):
+   - شريط وصول سريع للشاشات العشر الحقيقية المرفقة من نظام SAP GUI (sapps4app009):
+     * LS24 (20261019_231146.jpg): Stock per Material (Warehouse Number, Material, Plant, Storage Type/Bin, List View/ALV Grid).
+     * VT01N (20261019_231230.jpg): Create Shipment Initial Screen (TransportPlanningPt = TAC2 Logistics shipp, Shipment Type, Deliveries button).
+     * VL06C (20261019_231305.jpg): Outbound Deliveries for Confirmation (Confirm in Background, Pland Gds Mvmnt Date).
+     * VL06P (20261019_231339.jpg): Outbound Deliveries for Picking (Create TO in Background, Both Picking Types, Check at Item Level).
+     * VL06O (20261019_231359.jpg): Outbound Delivery Monitor (8 yellow buttons: For Checking, Distribution, Picking, Confirmation, Loading, Goods Issue, Transport Planning, List Outbound Deliveries).
+     * ZPACKCONF (20261019_231429.jpg): Packing Cockpit (Shipment Status 1..7, CSL Label verification, Auto-pack, ZPRN, RF Box/Pallet Packing, Pack by 3S, Load HU).
+     * ZMM4TR093 (20261019_231448.jpg): Warehouse Picking Performance Report (TO Confirmation Date, License Tag 3S/4S, User ID).
+     * MB51 (20261019_231533.jpg): Material Document List (Movement Type, Posting Date, Layout /DEFAULT+BC).
+     * ZMM4TR021 (20261019_231507.jpg): License Tag Report (Carton/Pallet/Shipment LT, Country of Origin, c:\ZLICTAG1.xls, ZINCUSTOMS).
+     * MB52 (20261019_231606.jpg): Display Warehouse Stocks of Material (Display Batch Stocks, No zero stock lines).
+   - بالإضافة إلى معاملات التصدير والإمداد: VA01, VL01N, VL02N (PGI 601), VL09 (602), VT02N, VF01 (Proforma F8), LT03, HU02, /SCWM/PRDO, /SCWM/PACK, /SCWM/TU, ME21N, MIGO, QA32, CO15, MMBE.
+2. خريطة رحلة المخزون الشاملة من الإنتاج إلى التصدير (8 مراحل متكاملة) مع تتبع تحول حالة المخزون وأكواد الحركة (Movement Types: 101, 321, 311, 261, 601, 602).
+3. استوديو تفاعلي لرفع صور SAP الحقيقية وترقيمها بالأسهم وتوليد JSON للنشر المباشر على GitHub.</pre>
+
+        <!-- GitHub Pages & Android APK Step-by-Step Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+            <h3 class="font-black text-sm flex items-center gap-2 text-blue-500">
+              <i class="fa-brands fa-github text-lg"></i>
+              <span>خطوات النشر المجاني على GitHub Pages مع صورك العشر:</span>
+            </h3>
+            <ol class="list-decimal list-inside text-xs space-y-1.5 text-slate-700 dark:text-slate-300 leading-relaxed">
+              <li>أنشئ مستودعاً جديداً (Repository) على حسابك في GitHub.</li>
+              <li>ارفع هذا الملف باسم <code class="font-mono text-amber-500">index.html</code> وارفع بجانبه الصور العشر بنفس أسمائها الأصلية (<code class="font-mono">20261019_231146.jpg</code> إلى <code class="font-mono">20261019_231606.jpg</code>).</li>
+              <li>من تبويب <strong>Settings &rarr; Pages</strong> اختر الفرع <code class="font-mono">main</code> ثم اضغط <strong>Save</strong> ليصبح موقعك متاحاً للجميع.</li>
+            </ol>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-2">
+            <h3 class="font-black text-sm flex items-center gap-2 text-emerald-500">
+              <i class="fa-brands fa-android text-lg"></i>
+              <span>تحويل الموقع إلى تطبيق Android (PWA / APK):</span>
+            </h3>
+            <ol class="list-decimal list-inside text-xs space-y-1.5 text-slate-700 dark:text-slate-300 leading-relaxed">
+              <li><strong>تثبيت مباشر (PWA)</strong>: افتح رابط GitHub Pages من متصفح Chrome على هاتفك الأندرويد واضغط <strong>"الإضافة إلى الشاشة الرئيسية / Install App"</strong>.</li>
+              <li><strong>ملف APK مستقل</strong>: ضع رابط موقعك على GitHub Pages داخل موقع <strong>PWABuilder.com</strong> واضغط <strong>Package for Stores &rarr; Android APK</strong> لتنزيل ملف APK جاهز للتثبيت.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =====================================================================
+       MOBILE BOTTOM NAVIGATION BAR (FIXED FOR ANDROID PHONES)
+       ===================================================================== -->
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 text-slate-300">
+    <div class="grid grid-cols-5 py-1.5 px-1 text-center">
+      <button onclick="switchMainTab('explorer')" data-tab="explorer" class="main-nav-btn flex flex-col items-center justify-center py-1 rounded-lg text-amber-400 font-bold">
+        <i class="fa-solid fa-desktop text-sm"></i>
+        <span class="text-[10px] mt-0.5">شاشات SAP</span>
+      </button>
+      <button onclick="switchMainTab('lifecycle')" data-tab="lifecycle" class="main-nav-btn flex flex-col items-center justify-center py-1 rounded-lg">
+        <i class="fa-solid fa-route text-sm"></i>
+        <span class="text-[10px] mt-0.5">رحلة المخزون</span>
+      </button>
+      <button onclick="switchMainTab('exporthub')" data-tab="exporthub" class="main-nav-btn flex flex-col items-center justify-center py-1 rounded-lg">
+        <i class="fa-solid fa-ship text-sm"></i>
+        <span class="text-[10px] mt-0.5">مركز التصدير</span>
+      </button>
+      <button onclick="switchMainTab('studio')" data-tab="studio" class="main-nav-btn flex flex-col items-center justify-center py-1 rounded-lg">
+        <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+        <span class="text-[10px] mt-0.5">استوديو الصور</span>
+      </button>
+      <button onclick="switchMainTab('prompt')" data-tab="prompt" class="main-nav-btn flex flex-col items-center justify-center py-1 rounded-lg">
+        <i class="fa-brands fa-github text-sm"></i>
+        <span class="text-[10px] mt-0.5">النشر & APK</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-2xl"></div>
+
+  <!-- =====================================================================
+       APPLICATION JAVASCRIPT ENGINE
+       ===================================================================== -->
+  <script>
+    // 1. ALL 26 SAP S/4HANA & EWM TRANSACTIONS (STARTING WITH THE 10 UPLOADED SCREENS FROM sapps4app009)
+    const SAP_TRANSACTIONS = [
+      // --- #1: 20261019_231146.jpg (LS24) ---
+      {
+        code: 'LS24',
+        module: 'EWM',
+        isUser10: true,
+        isExport: false,
+        imageFileName: '20261019_231146.jpg',
+        sapScreenTemplate: 'LS24',
+        fioriId: 'LS24 (sapps4app009 - Stock per Material)',
+        titleAr: 'عرض المخزون التفصيلي للمادة بالرفوف (Stock per Material)',
+        titleEn: 'Display Stock per Material in Warehouse (LS24)',
+        titleFr: 'Stock par article dans le magasin (LS24)',
+        stageId: 5,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231146.jpg): تعرض رصيد الصنف بدقة داخل المستودع على مستوى نوع التخزين (Storage Type) وعنوان الرف (Storage Bin) وحالة الفحص.',
+        errorTroubleshooting: 'إذا ظهرت رسالة بعدم وجود بيانات: تأكد من إدخال رقم المستودع (Warehouse Number) الصحيح وترك علامة (*) في خانة Stock Category و Special Stock.',
+        steps: [
+          { num: 1, title: 'إدخال رقم المستودع في الحقل الأصفر (Warehouse Number)', field: 'Warehouse Number', desc: 'أدخل رمز المستودع المكون من 3 خانات في الحقل العلوي المظلل باللون الأصفر.', x: 18, y: 24, arrowFromX: 7, arrowFromY: 15 },
+          { num: 2, title: 'إدخال كود المادة والمصنع الإلزاميين (Material & Plant)', field: 'Material [✓] | Plant [✓] | Storage Location', desc: 'أدخل رقم المادة (Material) ورمز المصنع (Plant) المشار إليهما بعلامة الإلزام، مع إمكانية تحديد موقع التخزين.', x: 24, y: 31, arrowFromX: 44, arrowFromY: 22 },
+          { num: 3, title: 'تحديد فئة المخزون، المخزون الخاص، والدفعة (Batch & Stock Category)', field: 'Stock Category: * | Special Stock: * | Batch', desc: 'اترك الرمز (*) في خانة Stock Category و Special Stock لعرض جميع الحالات (الحر، الجودة، المحظور) أو حدد رقم التشغيلة (Batch).', x: 22, y: 41, arrowFromX: 45, arrowFromY: 38 },
+          { num: 4, title: 'معايير الانتقاء بالرف وتاريخ الاستلام (Selection criteria)', field: 'Storage Type | Storage Bin | GR Date | Inspection Lot: 0', desc: 'يمكنك تصفية البحث بنوع التخزين (Storage Type) أو عنوان الرف (Storage Bin) أو تاريخ استلام البضاعة (GR Date).', x: 22, y: 57, arrowFromX: 46, arrowFromY: 56 },
+          { num: 5, title: 'اختيار طريقة العرض (List View أو ALV Grid)', field: '◉ List View | ○ ALV Grid | Layout', desc: 'اختر List View للعرض السريع أو ALV Grid للعرض الجدولي القابل للتصدير إلى إكسل، ثم اضغط Enter أو F8.', x: 18, y: 76, arrowFromX: 42, arrowFromY: 76 }
+        ]
+      },
+
+      // --- #2: 20261019_231230.jpg (VT01N) ---
+      {
+        code: 'VT01N',
+        module: 'SD',
+        isUser10: true,
+        isExport: true,
+        imageFileName: '20261019_231230.jpg',
+        sapScreenTemplate: 'VT01N',
+        fioriId: 'VT01N (sapps4app009 - Create Shipment: Initial Screen)',
+        titleAr: 'إنشاء وثيقة شحنة التصدير - الشاشة الابتدائية (Create Shipment)',
+        titleEn: 'Create Shipment: Initial Screen (TAC2 Logistics shipp)',
+        titleFr: 'Créer un document de transport : Écran initial (VT01N)',
+        stageId: 7,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231230.jpg): لإنشاء ملف شحنة التصدير عبر نقطة التخطيط TAC2 Logistics shipp وربط التسليمات الصادرة بها.',
+        errorTroubleshooting: 'إذا لم تظهر التسليمات عند الضغط على زر Deliveries: تأكد من اختيار Selection variant الصحيح وأن التسليمات الصادرة قابلة للتخطيط اللوجستي.',
+        steps: [
+          { num: 1, title: 'النقر على زر جلب التسليمات الصادرة (Deliveries Button)', field: 'Toolbar Button: Deliveries', desc: 'اضغط على زر Deliveries في شريط الأدوات العلوي لفتح نافذة اختيار التسليمات الصادرة المراد تجميعها في الشحنة.', x: 10, y: 15, arrowFromX: 28, arrowFromY: 14 },
+          { num: 2, title: 'تحديد نقطة تخطيط النقل اللوجستي (TransportPlanningPt)', field: 'TransportPlanningPt: TAC2 Logistics shipp', desc: 'في الحقل المظلل باللون الأصفر، يظهر كود نقطة تخطيط النقل المعتمدة (TAC2 Logistics shipp).', x: 18, y: 26, arrowFromX: 42, arrowFromY: 24 },
+          { num: 3, title: 'اختيار نوع الشحنة من القائمة المنسدلة (Shipment Type)', field: 'Shipment Type Dropdown', desc: 'اختر نوع الشحنة (شحن بحري، شحن بري، أو شحنة تصدير) من القائمة المنسدلة.', x: 18, y: 34, arrowFromX: 42, arrowFromY: 34 },
+          { num: 4, title: 'تحديد متغير الانتقاء المسبق (Selection variant)', field: 'Selection variant | Status: VT01N sapps4app009', desc: 'حدد متغير الانتقاء (Selection variant) لتصفية التسليمات، ثم احفظ الشحنة لإصدار رقمها.', x: 18, y: 40, arrowFromX: 42, arrowFromY: 42 }
+        ]
+      },
+
+      // --- #3: 20261019_231305.jpg (VL06C) ---
+      {
+        code: 'VL06C',
+        module: 'SD',
+        isUser10: true,
+        isExport: true,
+        imageFileName: '20261019_231305.jpg',
+        sapScreenTemplate: 'VL06C',
+        fioriId: 'VL06C (sapps4app009 - Outbound Deliveries for Confirmation)',
+        titleAr: 'تأكيد أوامر النقل للتسليمات الصادرة (Outbound Deliveries for Confirmation)',
+        titleEn: 'Outbound Deliveries for Confirmation (VL06C)',
+        titleFr: 'Livraisons sortantes à confirmer (VL06C)',
+        stageId: 6,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231305.jpg): لاستعراض وتأكيد التسليمات الصادرة التي تم سحب بضاعتها وتنتظر تأكيد أوامر النقل (Confirm in Background).',
+        errorTroubleshooting: 'إذا لم يظهر التسليم: تحقق من نطاق تاريخ حركة البضاعة المخطط (Pland Gds Mvmnt Date 19.10.2026 إلى 27.10.2026) أو فعّل خيار Read Unchecked Deliveries.',
+        steps: [
+          { num: 1, title: 'زر التنفيذ أو التأكيد في الخلفية (Confirm in Background)', field: 'Execute (F8) | Confirm in Background', desc: 'اضغط على أيقونة الساعة لعرض القائمة، أو زر Confirm in Background لتأكيد أوامر النقل آلياً.', x: 18, y: 14, arrowFromX: 38, arrowFromY: 13 },
+          { num: 2, title: 'إدخال نقطة الشحن أو الاستلام (Shipping Point/Receiving Pt)', field: 'Organizat. Data -> Shipping Point/Receiving Pt', desc: 'أدخل كود نقطة الشحن في الحقل الأصفر الأول.', x: 22, y: 22, arrowFromX: 46, arrowFromY: 21 },
+          { num: 3, title: 'تحديد تواريخ الالتقاط والتحميل وحركة البضاعة (Time Data)', field: 'Pland Gds Mvmnt Date: 19.10.2026 to 27.10.2026', desc: 'حدد فترة تاريخ حركة البضاعة المخطط (تظهر من 19.10.2026 إلى 27.10.2026) أو تاريخ الالتقاط.', x: 26, y: 34, arrowFromX: 50, arrowFromY: 33 },
+          { num: 4, title: 'التصفية بوكيل الشحن والمسار ورقم الشحنة (Partner & Shipment Data)', field: 'Forwarding Agent | Route | Shipment Number | Freight Order', desc: 'يمكنك تصفية التسليمات حسب شركة الشحن (Forwarding Agent) أو المسار (Route) أو رقم الشحنة.', x: 24, y: 63, arrowFromX: 50, arrowFromY: 62 },
+          { num: 5, title: 'خيارات الحالة وإظهار عدد البنود (Status & Display Options)', field: 'Read Unchecked Deliveries | Determine Number of Items', desc: 'فعّل Determine Number of Items لحساب عدد البنود داخل كل تسليم وإظهار وكيل الشحن.', x: 20, y: 85, arrowFromX: 48, arrowFromY: 85 }
+        ]
+      },
+
+      // --- #4: 20261019_231339.jpg (VL06P) ---
+      {
+        code: 'VL06P',
+        module: 'SD',
+        isUser10: true,
+        isExport: true,
+        imageFileName: '20261019_231339.jpg',
+        sapScreenTemplate: 'VL06P',
+        fioriId: 'VL06P (sapps4app009 - Outbound Deliveries for Picking)',
+        titleAr: 'التسليمات الصادرة الجاهزة للالتقاط والتحضير (Outbound Deliveries for Picking)',
+        titleEn: 'Outbound Deliveries for Picking (Create TO in Background)',
+        titleFr: 'Livraisons sortantes à prélever (VL06P)',
+        stageId: 6,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231339.jpg): لاستخراج التسليمات الصادرة التي تنتظر السحب من الرفوف وإنشاء أوامر النقل (TO) لها.',
+        errorTroubleshooting: 'تأكد من تحديد Both Picking Types وإدخال رقم المستودع (Warehouse Number) وتفعيل Check at Item Level.',
+        steps: [
+          { num: 1, title: 'زر التنفيذ أو إنشاء أوامر النقل في الخلفية (Create TO in Background)', field: 'Execute (F8) | Create TO in Background', desc: 'اضغط على أيقونة الساعة لعرض التسليمات الجاهزة للالتقاط، أو Create TO in Background لإنشاء أوامر النقل آلياً.', x: 18, y: 14, arrowFromX: 38, arrowFromY: 13 },
+          { num: 2, title: 'تحديد نقطة الشحن وفترة تاريخ الالتقاط (Shipping Point & Picking Date)', field: 'Shipping Point | Picking Date: 19.10.2026 to 27.10.2026', desc: 'أدخل نقطة الشحن في الحقل الأصفر وحدد فترة تاريخ الالتقاط المطلوب تحضيرها.', x: 22, y: 25, arrowFromX: 48, arrowFromY: 24 },
+          { num: 3, title: 'ضبط بيانات الالتقاط ورقم المستودع (Picking Data Frame)', field: '◉ Both Picking Types | Warehouse Number | ◉ Check at Item Level', desc: 'تأكد من اختيار Both Picking Types وتحديد رقم المستودع والفحص على مستوى البند (Check at Item Level).', x: 20, y: 42, arrowFromX: 48, arrowFromY: 41 },
+          { num: 4, title: 'التصفية بالدفعة أو تغذية الإنتاج (Material Data & Production Supply)', field: 'Batch | Prodn Supply Area | Order', desc: 'يمكنك الفلترة برقم التشغيلة (Batch) أو منطقة تغذية الإنتاج.', x: 22, y: 66, arrowFromX: 48, arrowFromY: 65 },
+          { num: 5, title: 'التصفية بالمسار ورقم الشحنة ووحدة المناولة (Shipment Data)', field: 'Route | Shipment Number | Handling Unit', desc: 'في أسفل الشاشة يمكنك البحث برقم مسار التصدير، رقم الشحنة، أو رقم الطبلية (Handling Unit).', x: 22, y: 84, arrowFromX: 48, arrowFromY: 84 }
+        ]
+      },
+
+      // --- #5: 20261019_231359.jpg (VL06O) ---
+      {
+        code: 'VL06O',
+        module: 'SD',
+        isUser10: true,
+        isExport: true,
+        imageFileName: '20261019_231359.jpg',
+        sapScreenTemplate: 'VL06O',
+        fioriId: 'VL06O (sapps4app009 - Outbound Delivery Monitor)',
+        titleAr: 'المراقب الشامل للتسليمات الصادرة (Outbound Delivery Monitor)',
+        titleEn: 'Outbound Delivery Monitor (8 Action Pushbuttons)',
+        titleFr: 'Moniteur des livraisons sortantes (VL06O)',
+        stageId: 5,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231359.jpg): الشاشة المركزية التي تضم الـ 8 أزرار الصفراء لإدارة جميع مراحل التسليم الصادر والتصدير.',
+        errorTroubleshooting: 'اضغط على الزر الموافق للمرحلة المطلوبة: For Picking يفتح VL06P، و For Confirmation يفتح VL06C، و For Goods Issue لترحيل PGI 601.',
+        steps: [
+          { num: 1, title: 'أزرار الفحص والتوزيع للمستودع (For Checking & For Distribution)', field: '[For Checking] | [For Distribution]', desc: 'لمراجعة التسليمات الصادرة قبل البدء أو متابعة توزيعها نحو المستودع.', x: 18, y: 29, arrowFromX: 42, arrowFromY: 26 },
+          { num: 2, title: 'زر التسليمات الجاهزة للالتقاط (For Picking)', field: 'Button: [For Picking] -> VL06P', desc: 'يفتح شاشة VL06P لعرض الطلبيات التي تحتاج إلى سحب من الرفوف وإنشاء أوامر نقل (TO).', x: 18, y: 37, arrowFromX: 42, arrowFromY: 36 },
+          { num: 3, title: 'زر تأكيد أوامر النقل المسحوبة (For Confirmation)', field: 'Button: [For Confirmation] -> VL06C', desc: 'يفتح شاشة VL06C لتأكيد الكميات التي تم سحبها فعلياً من المستودع.', x: 18, y: 43, arrowFromX: 42, arrowFromY: 43 },
+          { num: 4, title: 'أزرار التحميل وترحيل خروج البضاعة (For Loading & For Goods Issue)', field: '[For Loading] | [For Goods Issue (PGI 601)]', desc: 'لإدارة تحميل الشاحنات والحاويات وتنفيذ الترحيل النهائي لخروج البضاعة للتصدير (PGI 601).', x: 18, y: 52, arrowFromX: 42, arrowFromY: 52 },
+          { num: 5, title: 'تخطيط النقل والقائمة الشاملة (For Transport. Planning & List Outbound Deliveries)', field: '[For Transport. Planning] | [List Outbound Deliveries]', desc: 'يُستخدم الزر الأخير List Outbound Deliveries لعرض كشف شامل بجميع التسليمات الصادرة.', x: 18, y: 64, arrowFromX: 42, arrowFromY: 64 }
+        ]
+      },
+
+      // --- #6: 20261019_231429.jpg (ZPACKCONF) ---
+      {
+        code: 'ZPACKCONF',
+        module: 'EWM',
+        isUser10: true,
+        isExport: true,
+        imageFileName: '20261019_231429.jpg',
+        sapScreenTemplate: 'ZPACKCONF',
+        fioriId: 'ZPACKCONF (sapps4app009 - Packing Cockpit)',
+        titleAr: 'قمرة قيادة التعبئة والتغليف والشحن (Packing Cockpit - ZPACKCONF)',
+        titleEn: 'Packing Cockpit: Auto-Pack, CSL Verification, RF Packing & Load HU',
+        titleFr: 'Cockpit d’emballage et d’expédition (ZPACKCONF)',
+        stageId: 6,
+        mvtSummary: 'شاشة حقيقية مخصصة من نظامكم (20261019_231429.jpg): تدير دورة التعبئة الكاملة، التحقق من ملصقات CSL، التعبئة الآلية (Auto-pack)، طباعة ZPRN، وتحميل الطبليات (Load HU).',
+        errorTroubleshooting: 'تأكد من إشارات المرور الخضراء في Packing Status و Picking Status ومن مطابقة ملصقات CSL قبل الضغط على Load HU.',
+        steps: [
+          { num: 1, title: 'إدخال رقم الشحنة ومراحل الحالة الـ 7 (Shipment no. & Status 1..7)', field: 'Shipment Status [1..7] | Shipment no. | [ZPRN] [Clear]', desc: 'أدخل رقم الشحنة في الحقل الأصفر وتابع تقدم حالتها من 1 إلى 7 مع زر الطباعة ZPRN.', x: 14, y: 24, arrowFromX: 5, arrowFromY: 14 },
+          { num: 2, title: 'التحقق من ملصقات CSL وإنشاء/تعديل الشحنة (CSL Label verification)', field: '[CSL Label verification] | [Create/Change/Display Shipment]', desc: 'اضغط CSL Label verification لمطابقة باركود العميل، واستخدم الأزرار الثلاثة لإدارة الشحنة.', x: 16, y: 34, arrowFromX: 5, arrowFromY: 38 },
+          { num: 3, title: 'مؤشرات الوزن والحجم وإشارات حالة التعبئة والالتقاط (Weight & Status)', field: 'Weight | Volume | #2nd lvl HU | Packing/Picking Status', desc: 'يعرض إجمالي الوزن والحجم، عدد الطبليات، وإشارات المرور لحالة التعبئة والالتقاط.', x: 48, y: 24, arrowFromX: 70, arrowFromY: 18 },
+          { num: 4, title: 'جدول التسليمات وأزرار التعبئة الآلية والطباعة (Auto-pack & ZPRN Grid)', field: 'Delivery no. | # HUs -> [Auto-pack] | QA -> [ZPRN]', desc: 'في جدول التسليمات، اضغط Auto-pack لتعبئة التسليم آلياً وزر ZPRN لطباعة الملصقات.', x: 34, y: 49, arrowFromX: 62, arrowFromY: 48 },
+          { num: 5, title: 'أزرار التعبئة بالماسح الضوئي وطباعة الملصقات (RF Box/Pallet Packing & Pack by 3S)', field: '[Print labels] | [RF Box Packing] | [RF Pallet Packing] | [Pack by 3S]', desc: 'الأزرار السفلية لطباعة ملصقات CSL أو التعبئة بأجهزة RF للكراتين والطبليات أو Pack by 3S.', x: 26, y: 74, arrowFromX: 10, arrowFromY: 86 },
+          { num: 6, title: 'أزرار التحكم بالتحميل وتفريغ الطبليات (Load Control / Load HU / Unload HU)', field: '[Mass Change] | [Load Control] | [Load HU] | [Unload HU]', desc: 'في أقصى يمين الأزرار السفلية، استخدم Load HU لتحميل الطبلية في الحاوية أو Unload HU لتفريغها.', x: 78, y: 74, arrowFromX: 92, arrowFromY: 86 }
+        ]
+      },
+
+      // --- #7: 20261019_231448.jpg (ZMM4TR093) ---
+      {
+        code: 'ZMM4TR093',
+        module: 'EWM',
+        isUser10: true,
+        isExport: false,
+        imageFileName: '20261019_231448.jpg',
+        sapScreenTemplate: 'ZMM4TR093',
+        fioriId: 'ZMM4TR093 (sapps4app009 - Warehouse Picking Performance Report)',
+        titleAr: 'تقرير أداء وكفاءة الالتقاط في المستودع (Warehouse Picking Performance)',
+        titleEn: 'Warehouse Picking Performance Report (ZMM4TR093)',
+        titleFr: 'Rapport de performance de prélèvement magasin (ZMM4TR093)',
+        stageId: 6,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231448.jpg): لقياس سرعة وكفاءة تحضير أوامر النقل (TO) حسب المستخدم، التاريخ والوقت، وملصقات 3S/4S.',
+        errorTroubleshooting: 'لتنزيل التقرير كملف على الخادم، فعّل خيار Download File وتأكد من المسار /te/wm/usr/ واسم الملف ZMM4R093.',
+        steps: [
+          { num: 1, title: 'تحديد المستودع والمصنع وأنواع التخزين وتاريخ الإنجاز (Selection Criteria)', field: 'Warehouse | Plant | Source/Dest Storage Type | TO Completed Date', desc: 'أدخل رمز المستودع في الحقل الأصفر وحدد المصنع ونوع التخزين المصدر والوجهة وتاريخ وساعة الإنجاز.', x: 20, y: 24, arrowFromX: 48, arrowFromY: 21 },
+          { num: 2, title: 'اختيار أساس تاريخ إتمام أمر النقل (TO Completed date based on)', field: '◉ TO Confirmation Date | ○ Pick Confirmation Date', desc: 'اختر احتساب التقرير بناءً على تاريخ تأكيد أمر النقل (TO Confirmation Date).', x: 18, y: 37, arrowFromX: 48, arrowFromY: 36 },
+          { num: 3, title: 'التصفية بأمر النقل أو التسليم أو الملصق أو المستخدم (Additional Selection)', field: 'Transfer Order | Delivery | License Tag (3S/4S) | User ID', desc: 'يمكنك مراقبة إنتاجية مستخدم محدد (User ID) أو تتبع رقم تسليم أو ملصق (License Tag 3S/4S).', x: 22, y: 52, arrowFromX: 48, arrowFromY: 51 },
+          { num: 4, title: 'اختيار ملخص أو تفاصيل 3S/4S وخيارات العرض (Select Desired Parameters)', field: '◉ 3S/4S Summary | ○ 3S/4S Details | Show Sales Order', desc: 'اختر عرض الملخص الإجمالي (3S/4S Summary) أو التفاصيل الكاملة.', x: 18, y: 66, arrowFromX: 48, arrowFromY: 66 },
+          { num: 5, title: 'إعدادات تنزيل الملف (Download File Frame)', field: 'Download File | Code Page: 4110 | /te/wm/usr/ZMM4R093', desc: 'فعّل Download File لحفظ التقرير في المسار المحدد.', x: 22, y: 84, arrowFromX: 48, arrowFromY: 84 }
+        ]
+      },
+
+      // --- #8: 20261019_231533.jpg (MB51) ---
+      {
+        code: 'MB51',
+        module: 'MM/IM',
+        isUser10: true,
+        isExport: false,
+        imageFileName: '20261019_231533.jpg',
+        sapScreenTemplate: 'MB51',
+        fioriId: 'MB51 (sapps4app009 - Material Document List)',
+        titleAr: 'سجل وتقرير حركات المواد (Material Document List - MB51)',
+        titleEn: 'Material Document List (Audit Trail of Stock Movements)',
+        titleFr: 'Liste des documents articles (MB51)',
+        stageId: 8,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231533.jpg): تعرض كل حركة مخزنية دخلت أو خرجت من المصنع (101, 261, 311, 601...) مع التخطيط /DEFAULT+BC.',
+        errorTroubleshooting: 'للبحث السريع دون بطء النظام: حدد دائماً المصنع (Plant) ونطاق تاريخ الترحيل (Posting Date) قبل الضغط على F8.',
+        steps: [
+          { num: 1, title: 'تحديد الصنف والمصنع والمخزن والدفعة (Item Data)', field: 'Material | Plant | Storage Location | Batch', desc: 'أدخل كود المادة في الحقل الأصفر وحدد المصنع وموقع التخزين ورقم التشغيلة.', x: 20, y: 23, arrowFromX: 48, arrowFromY: 20 },
+          { num: 2, title: 'تصفية بالمورد أو العميل أو كود نوع الحركة (Movement Type)', field: 'Supplier | Customer | Movement Type (101, 261, 601...)', desc: 'أدخل رقم الحركة (مثل 601 للتصدير أو 101 للاستلامات) أو رقم العميل.', x: 20, y: 34, arrowFromX: 48, arrowFromY: 33 },
+          { num: 3, title: 'تحديد فترة تاريخ الترحيل واسم المستخدم والمرجع (Header Data)', field: 'Posting Date | User Name | Reference', desc: 'في إطار Header Data حدد نطاق تاريخ الترحيل أو اسم المستخدم الذي نفذ الحركة.', x: 20, y: 47, arrowFromX: 48, arrowFromY: 47 },
+          { num: 4, title: 'اختيار طريقة العرض والتخطيط ومصدر البيانات (Display Options)', field: '◉ Hierarchy List | ○ Flat List | Layout: /DEFAULT+BC', desc: 'اختر العرض الهرمي أو المسطح مع التخطيط /DEFAULT+BC ثم اضغط Execute (F8).', x: 20, y: 63, arrowFromX: 48, arrowFromY: 63 }
+        ]
+      },
+
+      // --- #9: 20261019_231507.jpg (ZMM4TR021) ---
+      {
+        code: 'ZMM4TR021',
+        module: 'EWM',
+        isUser10: true,
+        isExport: true,
+        imageFileName: '20261019_231507.jpg',
+        sapScreenTemplate: 'ZMM4TR021',
+        fioriId: 'ZMM4TR021 (sapps4app009 - License Tag Report)',
+        titleAr: 'تقرير تتبع باركود الكراتين والطبليات والشحنات والجمارك (License Tag Report)',
+        titleEn: 'License Tag Report (Carton / Pallet / Shipment LT & ZINCUSTOMS)',
+        titleFr: 'Rapport de traçabilité License Tag & Douane (ZMM4TR021)',
+        stageId: 7,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231507.jpg): التقرير الشامل لتتبع أرقام باركود الكراتين والطبليات والشحنات، بلد المنشأ، ودمج بيانات الجمارك من جدول ZINCUSTOMS.',
+        errorTroubleshooting: 'لتنزيل التقرير مباشرة إلى جهاز الكمبيوتر بصيغة إكسل، فعّل مربع Download To PC وتأكد من المسار c:\\ZLICTAG1.xls.',
+        steps: [
+          { num: 1, title: 'البحث برقم باركود الكرتون أو الطبلية أو الشحنة (License Tags)', field: 'Carton License Tag | Pallet License Tag | Shipment License Tag', desc: 'أدخل في الحقل الأصفر رقم ملصق الكرتون أو ملصق الطبلية أو ملصق الشحنة.', x: 22, y: 23, arrowFromX: 48, arrowFromY: 20 },
+          { num: 2, title: 'التصفية بالمادة، بلد المنشأ، وأمر البيع (Material, Origin & SD Doc)', field: 'Material Number | Batch | Country of Origin | SD document | Date Code YYWWWD', desc: 'استخرج الملصقات المرتبطة ببلد منشأ معين (Country of Origin) أو طلب بيع وتصدير (SD document number).', x: 22, y: 38, arrowFromX: 48, arrowFromY: 38 },
+          { num: 3, title: 'التصفية ببيانات المستودع وعنوان الرف (Warehouse & Storage Bin)', field: 'Warehouse | Storage Type | Storage Bin | Created On', desc: 'حدد رقم المستودع أو نوع التخزين أو عنوان الرف (Storage Bin).', x: 22, y: 52, arrowFromX: 48, arrowFromY: 52 },
+          { num: 4, title: 'خيارات التنزيل المباشر إلى الكمبيوتر بصيغة إكسل (Download Option)', field: 'Download To PC | Path: c:\\ZLICTAG1.xls | Output to Email', desc: 'فعّل Download To PC لحفظ الكشف مباشرة بصيغة Excel في المسار c:\\ZLICTAG1.xls.', x: 22, y: 74, arrowFromX: 48, arrowFromY: 74 },
+          { num: 5, title: 'إرفاق البيانات الجمركية من جدول الجمارك (Add info from ZINCUSTOMS table)', field: 'Checkbox: Add info from ZINCUSTOMS table', desc: 'فعّل خيار Add info from ZINCUSTOMS table في أسفل الشاشة لإدراج بيانات الجمارك الخاصة بالتصدير.', x: 18, y: 88, arrowFromX: 46, arrowFromY: 88 }
+        ]
+      },
+
+      // --- #10: 20261019_231606.jpg (MB52) ---
+      {
+        code: 'MB52',
+        module: 'MM/IM',
+        isUser10: true,
+        isExport: false,
+        imageFileName: '20261019_231606.jpg',
+        sapScreenTemplate: 'MB52',
+        fioriId: 'MB52 (sapps4app009 - Display Warehouse Stocks of Material)',
+        titleAr: 'عرض أرصدة المستودعات ومواقع التخزين للمواد (Display Warehouse Stocks - MB52)',
+        titleEn: 'Display Warehouse Stocks of Material (MB52)',
+        titleFr: 'Afficher les stocks magasin de l’article (MB52)',
+        stageId: 5,
+        mvtSummary: 'شاشة حقيقية من نظامكم (20261019_231606.jpg): تعرض كشفاً شاملاً لأرصدة المواد والدفعات وقيمتها المالية عبر جميع مواقع التخزين في المصنع.',
+        errorTroubleshooting: 'فعّل دائماً خيار Display Batch Stocks لعرض تفاصيل التشغيلات وخيار No zero stock lines لإخفاء الأسطر الصفرية.',
+        steps: [
+          { num: 1, title: 'تحديد المادة والمصنع وموقع التخزين والدفعة (Database Selections)', field: 'Material | Plant | Storage Location | Batch', desc: 'أدخل كود المادة في الحقل الأصفر وحدد المصنع وموقع التخزين ورقم التشغيلة.', x: 20, y: 23, arrowFromX: 48, arrowFromY: 20 },
+          { num: 2, title: 'تحديد نطاق القائمة والمخزون الخاص (Scope of List & Special Stocks)', field: 'Material Type | Material Group | Also Select Special Stocks', desc: 'يمكنك تصفية التقرير بنوع المادة (Material Type) أو مجموعة المواد مع تضمين المخزون الخاص.', x: 20, y: 38, arrowFromX: 48, arrowFromY: 38 },
+          { num: 3, title: 'ضبط إعدادات عرض الدفعات وإخفاء الأصفار (Settings Frame)', field: 'Display Batch Stocks | No zero stock lines | Do Not Display Values', desc: 'فعّل Display Batch Stocks لإظهار رقم التشغيلة لكل رصيد، وفعّل No zero stock lines لاستبعاد الأصفار.', x: 18, y: 54, arrowFromX: 48, arrowFromY: 54 },
+          { num: 4, title: 'اختيار التمثيل الهرمي أو الجدولي المسطح (Display Options)', field: '◉ Hierarchical Representation | ○ Non-Hierarchical Representation', desc: 'اختر Non-Hierarchical Representation لتصدير الجدول بسهولة إلى إكسل، ثم اضغط F8.', x: 18, y: 68, arrowFromX: 48, arrowFromY: 68 }
+        ]
+      },
+
+      // =========================================================================
+      // OTHER ESSENTIAL EXPORT, DELIVERY, EWM, PRODUCTION & INVENTORY T-CODES
+      // =========================================================================
+      {
+        code: 'VA01',
+        module: 'SD',
+        isExport: true,
+        fioriId: 'F1873 / VA01',
+        titleAr: 'إنشاء أمر بيع للتصدير الخارجي (Create Export Sales Order)',
+        titleEn: 'Create Export Sales Order (VA01)',
+        titleFr: 'Créer une commande client export (VA01)',
+        stageId: 5,
+        mvtSummary: 'الخطوة الأولى في التصدير: تحديد نوع الطلب الدولي، العميل الأجنبي (Sold-to / Ship-to)، شروط التجارة الدولية (Incoterms 2020: FOB/CIF)، ونقطة الشحن.',
+        errorTroubleshooting: 'تأكد من اكتمال بيانات التجارة الخارجية (Foreign Trade) وتحديد نقطة الشحن (Shipping Point) الصحيحة.',
+        steps: [
+          { num: 1, title: 'إدخال نوع أمر البيع والبيانات التنظيمية', field: 'Order Type: OR / ZEXP | Sales Org', desc: 'أدخل نوع أمر بيع التصدير ومنظمة المبيعات وقناة التوزيع.', x: 22, y: 24, arrowFromX: 45, arrowFromY: 18 },
+          { num: 2, title: 'تحديد العميل الأجنبي وشروط التجارة الدولية (Incoterms)', field: 'Sold-To Party | Ship-To Party | Incoterms: FOB/CIF', desc: 'أدخل رقم العميل الدولي وحدد شروط الشحن الدولي (FOB الميناء أو CIF).', x: 22, y: 40, arrowFromX: 48, arrowFromY: 38 },
+          { num: 3, title: 'إدخال الأصناف والكميات ومصنع التوريد ونقطة الشحن', field: 'Material | Order Quantity | Plant | Shipping Point', desc: 'أدخل المواد والكميات المطلوبة للتصدير وتأكد من توفر الرصيد ثم احفظ الطلب.', x: 24, y: 62, arrowFromX: 50, arrowFromY: 60 }
+        ]
+      },
+      {
+        code: 'VL01N',
+        module: 'SD',
+        isExport: true,
+        fioriId: 'F0869A / VL01N',
+        titleAr: 'إنشاء التسليم الصادر للتصدير (Create Outbound Delivery)',
+        titleEn: 'Create Outbound Delivery with Order Reference (VL01N)',
+        titleFr: 'Créer une livraison sortante (VL01N)',
+        stageId: 5,
+        mvtSummary: 'تحويل أمر بيع التصدير إلى وثيقة تسليم صادر (Outbound Delivery) لبدء التحضير والالتقاط في المستودع.',
+        errorTroubleshooting: 'إذا ظهر خطأ "خلل في فحص التوفر": راجع رصيد المخزون الحر في MMBE أو LS24.',
+        steps: [
+          { num: 1, title: 'إدخال نقطة الشحن (Shipping Point)', field: 'Shipping Point (e.g. TAC2 / 1000)', desc: 'حدد نقطة الشحن المسؤولة عن بوابة التصدير.', x: 22, y: 26, arrowFromX: 46, arrowFromY: 20 },
+          { num: 2, title: 'إدخال تاريخ الانتقاء ورقم أمر البيع', field: 'Selection Date | Order Number', desc: 'أدخل تاريخ الشحن ورقم أمر البيع الصادر من VA01 ثم اضغط Enter.', x: 22, y: 44, arrowFromX: 48, arrowFromY: 42 },
+          { num: 3, title: 'فحص الدفعات (Batch Split) وحفظ التسليم الصادر', field: 'Batch | Delivery Quantity | Save (Ctrl+S)', desc: 'تحقق من تخصيص الدفعات والكميات ثم احفظ الوثيقة لتنتقل إلى VL06O / VL06P.', x: 24, y: 66, arrowFromX: 50, arrowFromY: 64 }
+        ]
+      },
+      {
+        code: 'VL02N',
+        module: 'SD',
+        isExport: true,
+        fioriId: 'F0869A / VL02N',
+        titleAr: 'تعديل التسليم الصادر وترحيل خروج بضاعة التصدير (PGI 601)',
+        titleEn: 'Change Outbound Delivery & Post Goods Issue (PGI 601)',
+        titleFr: 'Modifier livraison sortante & Enregistrer sortie marchandises (PGI 601)',
+        stageId: 8,
+        mvtSummary: 'الخطوة الحاسمة لخروج البضاعة: استكمال بيانات الجمارك (HS Code) والضغط على زر Post Goods Issue لتنفيذ حركة 601 وخصم المخزون.',
+        errorTroubleshooting: 'لا يمكن تنفيذ PGI قبل تأكيد الالتقاط في VL06C وإغلاق التعبئة في ZPACKCONF.',
+        steps: [
+          { num: 1, title: 'إدخال رقم التسليم الصادر والضغط على زر Post Goods Issue', field: 'Outbound Delivery | Button: [Post Goods Issue]', desc: 'أدخل رقم التسليم الصادر، وتأكد من اكتمال الالتقاط والتعبئة.', x: 22, y: 24, arrowFromX: 48, arrowFromY: 18 },
+          { num: 2, title: 'مراجعة بيانات التجارة الخارجية والجمارك (Foreign Trade/Customs)', field: 'Commodity Code (HS Code) | Mode of Transport | Country of Origin', desc: 'في ترويسة وبنود التسليم، تأكد من وجود الرمز الجمركي HS Code وبلد المنشأ.', x: 24, y: 46, arrowFromX: 50, arrowFromY: 44 },
+          { num: 3, title: 'تنفيذ حركة الترحيل النهائية (Movement Type 601)', field: 'Status: Picked C + Packed C -> PGI 601 Posted', desc: 'اضغط Post Goods Issue ليتم توليد وثيقة المادة بحركة 601 وخصم المخزون رسمياً.', x: 24, y: 68, arrowFromX: 50, arrowFromY: 66 }
+        ]
+      },
+      {
+        code: 'VL09',
+        module: 'SD',
+        isExport: true,
+        fioriId: 'VL09 (Reverse PGI 602)',
+        titleAr: 'إلغاء وعكس ترحيل خروج البضاعة (Cancel/Reverse Goods Issue - 602)',
+        titleEn: 'Cancel / Reverse Goods Issue for Delivery (Movement 602)',
+        titleFr: 'Annuler la sortie de marchandises (Mouvement 602 - VL09)',
+        stageId: 8,
+        mvtSummary: 'تُستخدم لإلغاء حركة التصدير (601) عبر حركة عكسية (602) وإعادة البضاعة للمخزون إذا تطلب الأمر تعديل الكمية أو بيانات الجمارك قبل مغادرة الحاوية.',
+        errorTroubleshooting: 'إذا تم إصدار فاتورة مبيعات في VF01، يجب إلغاء الفاتورة في VF11 أولاً قبل عكس الحركة في VL09.',
+        steps: [
+          { num: 1, title: 'إدخال نقطة الشحن ورقم التسليم الصادر المراد عكسه', field: 'Shipping Point | Outbound Delivery Number', desc: 'أدخل رقم التسليم الذي تم ترحيله بالخطأ واضغط Execute (F8).', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'تحديد السطر والضغط على زر Reverse (عكس الحركة 602)', field: 'Select Delivery Row -> Click [Reverse]', desc: 'حدد التسليم من القائمة واضغط زر Reverse وتأكد من تاريخ العكس ليتم إرجاع الرصيد للمستودع.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'VT02N',
+        module: 'SD',
+        isExport: true,
+        fioriId: 'VT02N (Change Shipment & Seals)',
+        titleAr: 'تعديل وثيقة الشحنة وتوثيق الرصاص الجمركي ومراحل التحميل (Change Shipment)',
+        titleEn: 'Change Shipment: Container ID, Customs Seal & Shipment Stages',
+        titleFr: 'Modifier expédition : Conteneur, Scellé douanier et étapes (VT02N)',
+        stageId: 7,
+        mvtSummary: 'تُستخدم لتسجيل رقم الحاوية ورقم الرصاص الجمركي (Seal Number) وتفعيل أزرار مراحل الشحنة من تسجيل دخول الشاحنة (Check-in) حتى إتمام الشحن (Shipment Completion).',
+        errorTroubleshooting: 'تأكد من الضغط على أزرار المراحل بالترتيب: Planning -> Check-in -> Load Start -> Load End -> Shipment Completion.',
+        steps: [
+          { num: 1, title: 'فتح رقم الشحنة وتوثيق رقم الحاوية والرصاص الجمركي', field: 'Shipment Number | Container ID | Seal Number', desc: 'أدخل رقم الشحنة وسجل رقم الحاوية ورقم الختم الجمركي (Seal No).', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'تفعيل أزرار المراحل الزمنية للشحنة (Deadlines / Stages)', field: '[Check-in] -> [Load start] -> [Load end] -> [Shipment completion]', desc: 'اضغط على أزرار المراحل لتوثيق وقت دخول الشاحنة وبداية ونهاية التحميل ومغادرتها.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'VF01',
+        module: 'SD',
+        isExport: true,
+        fioriId: 'F0798 / VF01',
+        titleAr: 'إصدار الفاتورة الأولية للجمارك (Proforma F8) والفاتورة التجارية (Commercial F2)',
+        titleEn: 'Create Billing Document: Export Proforma (F8) & Commercial Invoice (F2)',
+        titleFr: 'Créer facture proforma douane (F8) et facture commerciale (F2 - VF01)',
+        stageId: 8,
+        mvtSummary: 'إصدار فاتورة الجمارك الأولية (Proforma Invoice F8) التي ترفق مع الشحنة للتخليص الجمركي حتى قبل الترحيل المحاسبي، أو الفاتورة التجارية النهائية (F2).',
+        errorTroubleshooting: 'لإصدار فاتورة الجمارك قبل PGI اختر نوع الفاتورة F8 (Proforma Invoice for Delivery).',
+        steps: [
+          { num: 1, title: 'اختيار نوع الفاتورة (F8 للجمارك أو F2 للتجارية)', field: 'Billing Type: F8 (Proforma) / F2 (Commercial)', desc: 'اختر F8 لإصدار فاتورة الجمارك الأولية أو F2 للفاتورة المالية النهائية.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'إدخال رقم التسليم الصادر وحفظ الفاتورة للطباعة', field: 'Document: Outbound Delivery No -> Save (Ctrl+S)', desc: 'أدخل رقم التسليم الصادر ثم اضغط Save لطباعة الفاتورة الجمركية.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'LT03',
+        module: 'EWM',
+        isExport: true,
+        fioriId: 'LT03 (Create Transfer Order for Delivery)',
+        titleAr: 'إنشاء أمر نقل والتقاط للتسليم الصادر (Create TO for Delivery)',
+        titleEn: 'Create Transfer Order for Outbound Delivery (LT03)',
+        titleFr: 'Créer un ordre de transfert pour livraison (LT03)',
+        stageId: 6,
+        mvtSummary: 'إنشاء أمر نقل مخزني (Transfer Order) لسحب البضاعة من الرفوف نحو منطقة رصيف الشحن (916) حسب قاعدة الأقدم صلاحية أولاً (FEFO).',
+        errorTroubleshooting: 'إذا لم يجد النظام رصيداً في الرفوف، راجع شاشة LS24 للتأكد من عدم وجود البضاعة في حالة فحص جودة.',
+        steps: [
+          { num: 1, title: 'إدخال رقم المستودع ورقم التسليم الصادر', field: 'Warehouse Number | Delivery | Plant', desc: 'أدخل رمز المستودع ورقم التسليم الصادر واضغط Enter.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'مراجعة الرف المصدر وحفظ أمر النقل (Save TO)', field: 'Source Bin -> Destination 916 | Save', desc: 'تأكد من الرف المقترح واضغط Save لتوليد رقم أمر النقل.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'HU02',
+        module: 'EWM',
+        isExport: true,
+        fioriId: 'HU02 (Create & Pack Handling Units)',
+        titleAr: 'إنشاء وتعبئة وحدات المناولة والطبليات (Create & Pack Handling Units - SSCC)',
+        titleEn: 'Create & Pack Handling Units / Export Pallets (HU02)',
+        titleFr: 'Créer et emballer des unités de manutention (HU02)',
+        stageId: 6,
+        mvtSummary: 'تعبئة المواد داخل كراتين أو طبليات تصدير وتوليد رقم باركود الطبلية المتسلسل (SSCC / License Tag).',
+        errorTroubleshooting: 'تأكد من إدخال مادة التغليف (Packaging Material مثل PALLET-EURO) في القسم العلوي قبل تعبئة الصنف.',
+        steps: [
+          { num: 1, title: 'إدخال مادة التغليف لتوليد رقم الطبلية (Packaging Material)', field: 'Packaging Material -> Generates HU / License Tag', desc: 'أدخل كود الطبلية أو الكرتون واضغط Enter لتوليد رقم وحدة المناولة.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'تحديد الصنف والدفعة والضغط على زر Pack', field: 'Material | Batch | Qty -> Click [Pack]', desc: 'حدد المادة والكمية في النصف السفلي واضغط أيقونة التعبئة Pack ثم احفظ.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: '/SCWM/PRDO',
+        module: 'EWM',
+        isExport: true,
+        fioriId: '/SCWM/PRDO (EWM Outbound Delivery Order)',
+        titleAr: 'إدارة أوامر الصرف والتصدير في المستودع المتقدم (/SCWM/PRDO)',
+        titleEn: 'Maintain Outbound Delivery Order in SAP EWM (/SCWM/PRDO)',
+        titleFr: 'Gérer l’ordre de livraison sortante EWM (/SCWM/PRDO)',
+        stageId: 6,
+        mvtSummary: 'إنشاء مهام المستودع (Warehouse Tasks) لسائقي الرافعات لسحب طبليات التصدير وترحيل خروج البضاعة من EWM.',
+        errorTroubleshooting: 'تأكد من فك أي حظر على البند وإنشاء مهام الالتقاط (Create Warehouse Task) وتأكيدها.',
+        steps: [
+          { num: 1, title: 'البحث برقم التسليم الصادر في مستودع EWM', field: 'Document Number (Outbound Delivery)', desc: 'ابحث برقم التسليم الصادر لعرض بنود أمر الصرف.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'إنشاء مهام المستودع وترحيل الخروج (Goods Issue)', field: 'Follow-On Functions -> Warehouse Task -> [Goods Issue]', desc: 'أنشئ مهمة السحب إلى بوابة الشحن GI-ZONE ثم اضغط Goods Issue بعد التحميل.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: '/SCWM/PACK',
+        module: 'EWM',
+        isExport: true,
+        fioriId: '/SCWM/PACK (EWM Packing Work Center)',
+        titleAr: 'محطة عمل التعبئة وإصدار باركود الطبلية (/SCWM/PACK)',
+        titleEn: 'EWM Work Center Packing & SSCC Label Generation (/SCWM/PACK)',
+        titleFr: 'Poste de travail d’emballage EWM (/SCWM/PACK)',
+        stageId: 6,
+        mvtSummary: 'إعادة تعبئة الكراتين على طبليات التصدير، وزن الطبلية الفعلي، وطباعة ملصق SSCC-18 وقائمة التعبئة.',
+        errorTroubleshooting: 'تأكد من اختيار Work Center الصحيح قبل الدخول للشاشة.',
+        steps: [
+          { num: 1, title: 'إنشاء طبلية تصدير وسحب الأصناف إليها', field: 'Create HU (SSCC) -> Drag & Drop Items', desc: 'أنشئ وحدة مناولة جديدة واسحب الأصناف الملتقطة إليها.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'تسجيل الوزن الفعلي وإغلاق الطبلية للطباعة', field: 'Gross Weight -> Close HU & Print Label', desc: 'أدخل الوزن القائم للطبلية واضغط Close HU لطباعة الملصق.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: '/SCWM/TU',
+        module: 'EWM',
+        isExport: true,
+        fioriId: '/SCWM/TU (Transportation Unit & Container)',
+        titleAr: 'إدارة الحاويات وبوابات الرصيف والرصاص الجمركي (/SCWM/TU)',
+        titleEn: 'Maintain Transportation Unit, Dock Door & Customs Seal (/SCWM/TU)',
+        titleFr: 'Gérer l’unité de transport et scellé douanier (/SCWM/TU)',
+        stageId: 7,
+        mvtSummary: 'ربط حاوية التصدير ببوابة الرصيف (Dock Door)، تحميل الطبليات، وتوثيق رقم الرصاص الجمركي (Seal Number) قبل مغادرة الشاحنة.',
+        errorTroubleshooting: 'يجب تحميل جميع الطبليات المربوطة بالتسليم قبل الضغط على Departure from Checkpoint.',
+        steps: [
+          { num: 1, title: 'وصول الحاوية وتخصيص بوابة الرصيف (Arrival at Checkpoint)', field: 'TU Number | Arrival at Checkpoint | Dock Door', desc: 'سجل وصول الشاحنة واربطها ببوابة التحميل.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'توثيق رقم الرصاص الجمركي ومغادرة الحاوية', field: 'Finish Loading -> Enter Seal Number -> Departure', desc: 'أدخل رقم الختم الجمركي (Seal No) واضغط Departure لترحيل المغادرة.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'ME21N',
+        module: 'MM/IM',
+        isExport: false,
+        fioriId: 'F0842A / ME21N',
+        titleAr: 'إنشاء أمر شراء للمواد الخام والتغليف (Create Purchase Order)',
+        titleEn: 'Create Purchase Order for Raw Materials (ME21N)',
+        titleFr: 'Créer une commande d’achat (ME21N)',
+        stageId: 1,
+        mvtSummary: 'بداية سلسلة الإمداد: إصدار أمر شراء رسمي للمورد لتوريد المواد الخام ومواد التغليف للمصنع.',
+        errorTroubleshooting: 'تأكد من إدخال منظمة الشراء (Purch. Org) والمصنع وموقع التخزين في جدول البنود.',
+        steps: [
+          { num: 1, title: 'اختيار المورد وبيانات ترويسة الشراء', field: 'Supplier (Vendor) | Purch. Org. | Purch. Group', desc: 'أدخل رقم المورد وبيانات منظمة الشراء في قسم Header.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'إدخال المواد والكميات والمصنع وحفظ أمر الشراء', field: 'Material | PO Quantity | Plant | Storage Location', desc: 'أدخل المواد الخام والكميات ثم اضغط Save لإصدار رقم أمر الشراء (45xxxxxxxx).', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'MIGO',
+        module: 'MM/IM',
+        isExport: false,
+        fioriId: 'MIGO (Goods Movement 101 / 261 / 311)',
+        titleAr: 'حركة البضائع: استلام الخامات والإنتاج أو الصرف للتصنيع (MIGO)',
+        titleEn: 'Goods Movement: GR 101, GI to Production 261, Transfer 311 (MIGO)',
+        titleFr: 'Mouvement de marchandises : Entrée 101, Sortie 261, Transfert 311 (MIGO)',
+        stageId: 1,
+        mvtSummary: 'المعاملة المحورية لتنفيذ استلام البضاعة من المورد أو الإنتاج (حركة 101)، صرف الخامات لأمر الإنتاج (حركة 261)، والتحويل بين المخازن (حركة 311).',
+        errorTroubleshooting: 'تأكد دائماً من تفعيل مربع Item OK في أسفل الشاشة وتحديد موقع التخزين والدفعة قبل الضغط على Post.',
+        steps: [
+          { num: 1, title: 'اختيار نوع العملية والمستند المرجعي ورقم الحركة', field: 'A01 Goods Receipt / A07 Goods Issue | Movement 101 / 261', desc: 'اختر Goods Receipt مع Purchase Order للاستلام (101) أو Goods Issue مع Order للصرف للإنتاج (261).', x: 22, y: 24, arrowFromX: 48, arrowFromY: 18 },
+          { num: 2, title: 'التحقق من الكمية وموقع التخزين ورقم الدفعة (Quantity, Where & Batch)', field: 'Qty in UnE | Storage Location | Batch', desc: 'أدخل الكمية الفعلية وموقع التخزين ورقم الدفعة وتاريخ الصلاحية.', x: 24, y: 48, arrowFromX: 50, arrowFromY: 46 },
+          { num: 3, title: 'تفعيل مربع Item OK والضغط على Check ثم Post', field: '☑ Item OK -> [Check] -> [Post]', desc: 'ضع علامة صح أمام Item OK ثم اضغط Post لحفظ وثيقة المادة.', x: 24, y: 72, arrowFromX: 50, arrowFromY: 70 }
+        ]
+      },
+      {
+        code: 'QA32',
+        module: 'QM',
+        isExport: false,
+        fioriId: 'QA32 (Quality Inspection Usage Decision)',
+        titleAr: 'فحص الجودة واتخاذ قرار الاستخدام والإفراج للمخزون الحر (QA32)',
+        titleEn: 'Inspection Lot Selection & Usage Decision (Movement 321 - QA32)',
+        titleFr: 'Contrôle qualité et décision d’utilisation (Mouvement 321 - QA32)',
+        stageId: 2,
+        mvtSummary: 'تحويل المخزون من حالة "قيد فحص الجودة (Quality Inspection)" إلى "مخزون حر غير مقيد (Unrestricted Use)" عبر حركة 321 ليصبح متاحاً للإنتاج أو التصدير.',
+        errorTroubleshooting: 'إذا بقيت الكمية في فحص الجودة بعد قرار القبول، تأكد من تعبئة الكمية في تبويب Inspection Lot Stock أمام حقل To Unrestricted Use.',
+        steps: [
+          { num: 1, title: 'عرض دفعات الفحص المفتوحة والضغط على زر Usage Decision', field: 'Select Inspection Lot -> Click [Usage Decision]', desc: 'ابحث بالمصنع أو المادة وحدد دفعة الفحص ثم اضغط زر Usage Decision.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'إدخال كود القبول (A) وترحيل الكمية للمخزون الحر (حركة 321)', field: 'UD Code: A (Accepted) -> Inspection Lot Stock: To Unrestricted Use', desc: 'أدخل كود القبول A وانتقل لتبويب المخزون لترحيل الكمية إلى Unrestricted Use ثم احفظ.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'CO15',
+        module: 'PP',
+        isExport: false,
+        fioriId: 'CO15 (Confirm Production Order)',
+        titleAr: 'تأكيد أمر الإنتاج واستلام المنتج التام الصنع (Confirm Production Order - CO15)',
+        titleEn: 'Enter Production Order Confirmation (Yield + Backflush 261 + GR 101)',
+        titleFr: 'Confirmation de l’ordre de fabrication (CO15)',
+        stageId: 4,
+        mvtSummary: 'تسجيل الكمية المنتجة السليمة (Yield) وتنفيذ السحب الآلي للخامات (261) واستلام المنتج التام في المخزن (101).',
+        errorTroubleshooting: 'اضغط على زر Goods Movements قبل الحفظ للتأكد من عدم وجود أخطاء نقص رصيد خامات في جدول COGI.',
+        steps: [
+          { num: 1, title: 'إدخال رقم أمر الإنتاج والكمية السليمة المنتجة (Yield)', field: 'Order Number | Confirmation Type: Final | Yield', desc: 'أدخل رقم أمر التصنيع والكمية المنتجة الفعلية (Yield).', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'مراجعة حركات المواد المرافقة وحفظ التأكيد', field: 'Click [Goods Movements] -> Save (Ctrl+S)', desc: 'راجع استهلاك الخامات واستلام المنتج التام ثم اضغط Save.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      },
+      {
+        code: 'MMBE',
+        module: 'MM/IM',
+        isExport: false,
+        fioriId: 'F1076 / MMBE',
+        titleAr: 'نظرة عامة فورية على أرصدة وحالات المخزون (Stock Overview - MMBE)',
+        titleEn: 'Stock Overview by Plant, Storage Location & Batch (MMBE)',
+        titleFr: 'Synthèse des stocks par division, magasin et lot (MMBE)',
+        stageId: 5,
+        mvtSummary: 'شاشة الاستعلام السريع لمعرفة رصيد المادة الموزع بين المخزون الحر (Unrestricted)، فحص الجودة (Quality Inspection)، المحجوز للتسليمات (Scheduled for Delivery)، والمحظور (Blocked).',
+        errorTroubleshooting: 'انقر مرتين على أي رقم في الجدول لعرض تفاصيل أكثر أو التحويل إلى وحدات قياس بديلة (كرتون/طبلية).',
+        steps: [
+          { num: 1, title: 'إدخال رقم المادة والمصنع والضغط على Execute (F8)', field: 'Material | Plant | Storage Location -> Execute (F8)', desc: 'أدخل كود المادة والمصنع ثم اضغط F8.', x: 22, y: 28, arrowFromX: 48, arrowFromY: 22 },
+          { num: 2, title: 'قراءة الأعمدة: Unrestricted / Quality Inspection / Scheduled for Delivery', field: 'Tree View: Plant -> Storage Location -> Batch', desc: 'راجع الكمية الحرة القابلة للشحن في عمود Unrestricted.', x: 24, y: 58, arrowFromX: 50, arrowFromY: 56 }
+        ]
+      }
+    ];
+
+    // 2. THE 8 STAGES OF THE INVENTORY LIFECYCLE (PRODUCTION TO EXPORT)
+    const LIFECYCLE_STAGES = [
+      {
+        id: 1,
+        title: '1. الشراء واستلام الخامات',
+        badge: 'Mvt 101',
+        stockFrom: 'Vendor Transit',
+        stockTo: 'Quality Inspection (QI)',
+        tcodes: ['ME21N', 'MIGO', 'MB51'],
+        desc: 'إنشاء أمر الشراء في ME21N ثم استلام الشحنة فعلياً في المصنع عبر MIGO بحركة 101 لتدخل في رصيد فحص الجودة.'
+      },
+      {
+        id: 2,
+        title: '2. فحص الجودة والإفراج',
+        badge: 'Mvt 321',
+        stockFrom: 'Quality Inspection',
+        stockTo: 'Unrestricted Use (حر)',
+        tcodes: ['QA32', 'LS24', 'MMBE'],
+        desc: 'فحص العينة في QA32 واتخاذ قرار القبول (A) لترحيل الرصيد بحركة 321 إلى المخزون الحر القابل للصرف والتصنيع.'
+      },
+      {
+        id: 3,
+        title: '3. تغذية وصرف الخامات للإنتاج',
+        badge: 'Mvt 311 / 261',
+        stockFrom: 'Raw Warehouse',
+        stockTo: 'Production WIP',
+        tcodes: ['MIGO', 'LS24', 'MB51'],
+        desc: 'نقل المواد الخام إلى صالة الإنتاج (311) وصرفها على أمر التصنيع في MIGO بحركة 261.'
+      },
+      {
+        id: 4,
+        title: '4. تأكيد التصنيع والمنتج التام',
+        badge: 'Mvt 101 (FG)',
+        stockFrom: 'Production Line',
+        stockTo: 'Finished Goods Stock',
+        tcodes: ['CO15', 'MIGO', 'HU02'],
+        desc: 'تأكيد إنتاج البضاعة تامة الصنع في CO15 وإصدار ملصقات الكراتين والطبليات واستلامها في المستودع بحركة 101.'
+      },
+      {
+        id: 5,
+        title: '5. الرقابة وأمر بيع التصدير',
+        badge: 'Order & Delivery',
+        stockFrom: 'Unrestricted FG',
+        stockTo: 'Scheduled for Delivery',
+        tcodes: ['LS24', 'MB52', 'MMBE', 'VA01', 'VL01N', 'VL06O'],
+        desc: 'فحص أرصدة الرفوف في LS24 و MB52، ثم إنشاء أمر بيع التصدير VA01 والتسليم الصادر VL01N ومراقبته عبر VL06O.'
+      },
+      {
+        id: 6,
+        title: '6. الالتقاط والتأكيد وقمرة التعبئة',
+        badge: 'Pick & Pack',
+        stockFrom: 'Storage Bin',
+        stockTo: 'Packed HU / CSL Verified',
+        tcodes: ['VL06P', 'LT03', 'VL06C', 'ZPACKCONF', 'ZMM4TR093', '/SCWM/PACK'],
+        desc: 'سحب البضاعة عبر VL06P و LT03، وتأكيد أوامر النقل في VL06C، ثم التعبئة والتحقق من ملصقات CSL وطباعة ZPRN داخل قمرة التعبئة ZPACKCONF.'
+      },
+      {
+        id: 7,
+        title: '7. الشحنة، الحاوية، وتتبع الجمارك',
+        badge: 'Shipment & LT',
+        stockFrom: 'Packed Staging',
+        stockTo: 'Loaded & Sealed Container',
+        tcodes: ['VT01N', 'VT02N', 'ZMM4TR021', '/SCWM/TU'],
+        desc: 'إنشاء شحنة التصدير في VT01N (نقطة TAC2)، توثيق الرصاص الجمركي في VT02N، واستخراج تقرير الملصقات والجمارك ZMM4TR021 (مع جدول ZINCUSTOMS).'
+      },
+      {
+        id: 8,
+        title: '8. ترحيل التصدير PGI 601 والفاتورة',
+        badge: 'Mvt 601 & F8',
+        stockFrom: 'Loaded Container',
+        stockTo: 'Exported & Invoiced',
+        tcodes: ['VL02N', 'VF01', 'VL09', 'MB51'],
+        desc: 'تنفيذ Post Goods Issue (حركة 601) في VL02N لخصم المخزون نهائياً، وإصدار فاتورة الجمارك الأولية (Proforma F8) والفاتورة التجارية (F2) في VF01.'
+      }
+    ];
+
+    // 3. APPLICATION STATE & INDEXEDDB FOR REAL PHOTOS
+    let currentLang = 'ar';
+    let currentModuleFilter = 'ALL';
+    let activeTcodeIndex = 0;
+    let activeStepIndex = 0;
+    let showArrowsOverlay = true;
+    let preferPhotoMode = true;
+    let activeLifecycleStageId = 1;
+    const UPLOADED_PHOTO_MAP = {};
+
+    let studioCustomSteps = [
+      { num: 1, title: 'تحديد الحقل الأساسي في أعلى الشاشة', field: 'Primary Field', desc: 'أدخل الكود المطلوب في الحقل المظلل.', x: 24, y: 28, arrowFromX: 10, arrowFromY: 15 },
+      { num: 2, title: 'ضبط خيارات التصفية والتنفيذ (F8)', field: 'Selection & Execute', desc: 'راجع المعايير ثم اضغط Execute (F8).', x: 35, y: 58, arrowFromX: 60, arrowFromY: 50 }
+    ];
+    let studioUploadedDataUrl = '';
+
+    function openPhotosDb() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open('SapAcademyPhotosDB_v2', 1);
+        req.onupgradeneeded = function (e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('photos')) {
+            db.createObjectStore('photos', { keyPath: 'fileName' });
+          }
+        };
+        req.onsuccess = e => resolve(e.target.result);
+        req.onerror = e => reject(e.target.error);
+      });
+    }
+
+    async function loadPhotosFromIndexedDB() {
+      try {
+        const db = await openPhotosDb();
+        const tx = db.transaction('photos', 'readonly');
+        const req = tx.objectStore('photos').getAll();
+        return new Promise(resolve => {
+          req.onsuccess = () => {
+            (req.result || []).forEach(item => {
+              UPLOADED_PHOTO_MAP[item.fileName] = item.dataUrl;
+            });
+            resolve();
+          };
+          req.onerror = () => resolve();
+        });
+      } catch (e) {
+        console.warn('IndexedDB unavailable:', e);
+      }
+    }
+
+    async function savePhotoToIndexedDB(fileName, dataUrl) {
+      UPLOADED_PHOTO_MAP[fileName] = dataUrl;
+      try {
+        const db = await openPhotosDb();
+        const tx = db.transaction('photos', 'readwrite');
+        tx.objectStore('photos').put({ fileName, dataUrl });
+      } catch (e) {
+        console.warn('IndexedDB write error:', e);
+      }
+    }
+
+    async function handleBulkTenImagesUpload(event) {
+      const files = Array.from(event.target.files || []);
+      if (!files.length) return;
+      for (const file of files) {
+        const dataUrl = await new Promise(res => {
+          const r = new FileReader();
+          r.onload = e => res(e.target.result);
+          r.readAsDataURL(file);
+        });
+        await savePhotoToIndexedDB(file.name, dataUrl);
+      }
+      preferPhotoMode = true;
+      renderUserTenScreensStrip();
+      renderInteractiveSapScreen();
+      showToast(`تم تركيب وحفظ ${files.length} صورة حقيقية من جهازك بنجاح!`);
+    }
+
+    // 4. INITIALIZE APP
+    window.onload = async function () {
+      await loadPhotosFromIndexedDB();
+      renderUserTenScreensStrip();
+      renderTcodeCards();
+      selectTransaction(0);
+      renderLifecyclePipeline();
+      selectLifecycleStage(1);
+      renderExportHubCards();
+      renderStudioAnnotations();
+    };
+
+    // 5. RENDER TOP STRIP OF THE 10 UPLOADED SCREENS FROM sapps4app009
+    function renderUserTenScreensStrip() {
+      const strip = document.getElementById('userTenScreensStrip');
+      if (!strip) return;
+      const user10 = SAP_TRANSACTIONS.map((t, idx) => ({ ...t, idx })).filter(t => t.isUser10);
+
+      strip.innerHTML = user10.map((item, i) => {
+        const isAct = item.idx === activeTcodeIndex;
+        const hasPhoto = Boolean(UPLOADED_PHOTO_MAP[item.imageFileName]);
+        return `
+          <button
+            onclick="selectTransaction(${item.idx})"
+            class="p-2.5 rounded-xl border text-right transition flex flex-col justify-between gap-1 ${
+              isAct
+                ? 'bg-emerald-500 text-slate-950 border-emerald-400 font-black shadow-md'
+                : 'bg-slate-50 dark:bg-slate-800/90 border-slate-200 dark:border-slate-700 hover:border-emerald-400 text-slate-800 dark:text-slate-100'
+            }"
+          >
+            <div class="flex items-center justify-between w-full">
+              <span class="px-1.5 py-0.5 rounded font-mono font-black text-[11px] ${
+                isAct ? 'bg-slate-950 text-emerald-400' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+              }">${item.code}</span>
+              <span class="text-[10px] font-mono opacity-80">#${i + 1} ${hasPhoto ? '📸' : '🖥️'}</span>
+            </div>
+            <div class="text-[11px] font-bold leading-snug line-clamp-2 mt-0.5">${getLocalizedTitle(item)}</div>
+            <div class="text-[9px] font-mono opacity-75 truncate">${item.imageFileName}</div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function getLocalizedTitle(t) {
+      if (currentLang === 'en') return t.titleEn || t.titleAr;
+      if (currentLang === 'fr') return t.titleFr || t.titleAr;
+      return t.titleAr;
+    }
+
+    // 6. RENDER HORIZONTAL T-CODE CARDS
+    function renderTcodeCards(query = '') {
+      const grid = document.getElementById('tcodeCardsGrid');
+      const filtered = SAP_TRANSACTIONS.map((t, idx) => ({ ...t, originalIndex: idx })).filter(t => {
+        const matchesMod =
+          currentModuleFilter === 'ALL' ||
+          (currentModuleFilter === 'USER10' && t.isUser10) ||
+          (currentModuleFilter === 'EXPORT' && t.isExport) ||
+          (currentModuleFilter === 'PP' && (t.module === 'PP' || t.module === 'QM')) ||
+          t.module === currentModuleFilter;
+        const matchesQuery =
+          !query ||
+          t.code.toLowerCase().includes(query) ||
+          (t.imageFileName && t.imageFileName.toLowerCase().includes(query)) ||
+          (t.titleAr && t.titleAr.toLowerCase().includes(query)) ||
+          (t.titleEn && t.titleEn.toLowerCase().includes(query)) ||
+          (t.mvtSummary && t.mvtSummary.toLowerCase().includes(query));
+        return matchesMod && matchesQuery;
+      });
+
+      document.getElementById('tcodeCountBadge').textContent = filtered.length;
+
+      grid.innerHTML = filtered.map(t => {
+        const isAct = t.originalIndex === activeTcodeIndex;
+        return `
+          <button
+            onclick="selectTransaction(${t.originalIndex})"
+            class="shrink-0 w-44 sm:w-52 p-3 rounded-xl border text-right transition flex flex-col justify-between gap-1.5 ${
+              isAct
+                ? 'bg-amber-500 text-slate-950 border-amber-400 font-black shadow-lg'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-amber-400'
+            }"
+          >
+            <div class="flex items-center justify-between w-full">
+              <span class="px-2 py-0.5 rounded font-mono font-black text-xs ${
+                isAct ? 'bg-slate-950 text-amber-400' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+              }">${t.code}</span>
+              <span class="text-[10px] font-bold opacity-75">${t.isUser10 ? 'sapps4app009' : t.module}</span>
+            </div>
+            <div class="text-xs font-extrabold line-clamp-2 leading-snug">${getLocalizedTitle(t)}</div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function handleSearchInput(val) {
+      const q = val.trim().toLowerCase();
+      renderTcodeCards(q);
+      const firstMatch = SAP_TRANSACTIONS.findIndex(
+        t =>
+          t.code.toLowerCase().includes(q) ||
+          (t.imageFileName && t.imageFileName.toLowerCase().includes(q)) ||
+          t.titleAr.toLowerCase().includes(q) ||
+          t.titleEn.toLowerCase().includes(q)
+      );
+      if (firstMatch !== -1 && q.length >= 2) {
+        selectTransaction(firstMatch, 0, false);
+      }
+    }
+
+    function clearSearchInput() {
+      const inp = document.getElementById('tcodeSearchInput');
+      inp.value = '';
+      renderTcodeCards('');
+    }
+
+    function setModuleFilter(mod) {
+      currentModuleFilter = mod;
+      document.querySelectorAll('.mod-pill').forEach(btn => {
+        if (btn.getAttribute('data-mod') === mod) {
+          btn.className = 'mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-amber-500 text-slate-950 transition';
+        } else {
+          btn.className = 'mod-pill px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white/10 text-slate-200 hover:bg-white/20 transition';
+        }
+      });
+      renderTcodeCards(document.getElementById('tcodeSearchInput').value.trim().toLowerCase());
+    }
+
+    // 7. SELECT TRANSACTION & BUILD 1:1 SAP GUI REPLICA + SVG ARROWS
+    function selectTransaction(index, stepIdx = 0, rerenderCards = true) {
+      activeTcodeIndex = index;
+      activeStepIndex = stepIdx;
+      const t = SAP_TRANSACTIONS[activeTcodeIndex];
+      if (!t) return;
+
+      document.getElementById('activeTcodeBadge').textContent = t.code;
+      document.getElementById('activeTcodeTitle').textContent = getLocalizedTitle(t);
+      document.getElementById('activeTcodeModule').textContent = t.isUser10 ? `${t.module} • sapps4app009` : t.module;
+      document.getElementById('activeTcodeFiori').textContent = t.imageFileName
+        ? `ملف الشاشة: ${t.imageFileName} | ${t.fioriId}`
+        : `Fiori / SAP GUI: ${t.fioriId}`;
+      document.getElementById('activeTcodeMvtInfo').textContent = t.mvtSummary;
+      document.getElementById('activeTcodeErrorInfo').textContent = t.errorTroubleshooting;
+
+      renderUserTenScreensStrip();
+      if (rerenderCards) {
+        renderTcodeCards(document.getElementById('tcodeSearchInput').value.trim().toLowerCase());
+      }
+      renderInteractiveSapScreen();
+      renderStepsList();
+    }
+
+    // 8. 1:1 PIXEL-ACCURATE RENDERER FOR THE 10 UPLOADED SCREENS + OTHER T-CODES
+    function buildSapps4app009ScreenHtml(t) {
+      const tpl = t.sapScreenTemplate || t.code;
+      const statusBar = code => `
+        <div class="sap-sig-statusbar px-3 py-1 flex items-center justify-between mt-auto">
+          <div class="flex items-center gap-1.5">
+            <span class="w-3.5 h-3.5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[8px]">✓</span>
+            <span class="text-[10px] text-slate-700">SAP S/4HANA GUI - System sapps4app009</span>
+          </div>
+          <div class="flex items-center gap-2 font-mono text-[10px]">
+            <span class="px-1.5 bg-white border border-slate-400 rounded font-bold">${code}</span>
+            <span>sapps4app009</span>
+            <span>OVR</span>
+          </div>
+        </div>
+      `;
+
+      const topChrome = (menus, title) => `
+        <div class="sap-sig-menubar px-2.5 py-1 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            ${menus.map(m => `<span>${m}</span>`).join('')}
+          </div>
+          <span class="text-[10px] font-mono text-slate-600">${t.imageFileName || t.code}</span>
+        </div>
+        <div class="sap-sig-toolbar px-2.5 py-1 flex items-center gap-1.5">
+          <span class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[9px] font-bold">✓</span>
+          <div class="sap-sig-input w-24 bg-white font-bold">${t.code}</div>
+          <span class="px-1.5 py-0.5 border border-slate-400 bg-slate-100 rounded text-[10px]">🕒 F8</span>
+          <span class="px-1.5 py-0.5 border border-slate-400 bg-slate-100 rounded text-[10px]">💾</span>
+          <span class="px-1.5 py-0.5 border border-slate-400 bg-amber-400/80 rounded text-[10px]">⬅</span>
+          <span class="px-1.5 py-0.5 border border-slate-400 bg-rose-500 text-white rounded text-[10px]">✖</span>
+        </div>
+        <div class="sap-sig-titlebar px-3 py-1">${title}</div>
+      `;
+
+      if (tpl === 'LS24') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Material', 'Edit', 'Goto', 'System', 'Help'], 'Stock per Material')}
+            <div class="p-3 space-y-2 flex-1">
+              <div class="space-y-1 max-w-md">
+                <div onclick="setStep(0)" class="flex items-center cursor-pointer"><span class="w-36">Warehouse Number</span><span class="sap-sig-input sap-sig-input-focus w-12">100</span></div>
+                <div onclick="setStep(1)" class="flex items-center cursor-pointer"><span class="w-36">Material</span><span class="sap-sig-input w-44">☑ FG-EXPORT-900</span></div>
+                <div onclick="setStep(1)" class="flex items-center cursor-pointer"><span class="w-36">Plant</span><span class="sap-sig-input w-16">☑ 1000</span></div>
+                <div onclick="setStep(2)" class="flex items-center cursor-pointer"><span class="w-36">Storage Location</span><span class="sap-sig-input w-16"></span></div>
+                <div onclick="setStep(2)" class="flex items-center cursor-pointer"><span class="w-36">Stock Category</span><span class="sap-sig-input w-8">*</span></div>
+                <div onclick="setStep(2)" class="flex items-center cursor-pointer"><span class="w-36">Special Stock</span><span class="sap-sig-input w-8">*</span><span class="sap-sig-input w-28 ml-1"></span></div>
+                <div onclick="setStep(2)" class="flex items-center cursor-pointer"><span class="w-36">Batch</span><span class="sap-sig-input w-24"></span></div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-md cursor-pointer">
+                <div class="sap-sig-frame-title">Selection criteria</div>
+                <div class="p-2 space-y-1">
+                  <div class="flex items-center"><span class="w-32">Storage Type</span><span class="sap-sig-input w-12"></span></div>
+                  <div class="flex items-center"><span class="w-32">Storage Bin</span><span class="sap-sig-input w-24"></span></div>
+                  <div class="flex items-center"><span class="w-32">GR Date</span><span class="sap-sig-input w-20"></span><span class="sap-sig-input w-20 ml-1"></span></div>
+                  <div class="flex items-center"><span class="w-32">Inspection Lot</span><span class="sap-sig-input w-28">0</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(4)" class="sap-sig-frame max-w-md cursor-pointer">
+                <div class="sap-sig-frame-title">Display Type</div>
+                <div class="p-2 flex items-center gap-6"><span>◉ List View</span><span>○ ALV Grid</span><span>Layout <span class="sap-sig-input w-20"></span></span></div>
+              </div>
+            </div>
+            ${statusBar('LS24')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'VT01N') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Shipment', 'Edit', 'Goto', 'Environment', 'System', 'Help'], 'Create Shipment: Initial Screen')}
+            <div onclick="setStep(0)" class="sap-sig-toolbar px-3 py-1 flex items-center gap-2 cursor-pointer">
+              <span class="sap-sig-btn">📦 Deliveries</span>
+              <span class="px-1.5 py-0.5 bg-white border border-slate-400 rounded text-[10px]">🚚</span>
+            </div>
+            <div class="p-4 space-y-3 flex-1">
+              <div onclick="setStep(1)" class="flex items-center gap-2 cursor-pointer pt-2">
+                <span class="w-36">TransportPlanningPt</span>
+                <span class="sap-sig-input sap-sig-input-focus w-14">TAC2</span>
+                <span class="font-bold text-slate-800">TAC2 Logistics shipp</span>
+              </div>
+              <div onclick="setStep(2)" class="flex items-center gap-2 cursor-pointer">
+                <span class="w-36">Shipment Type</span>
+                <span class="sap-sig-input w-36 justify-between"><span>0010</span><span>▾</span></span>
+              </div>
+              <div onclick="setStep(3)" class="flex items-center gap-2 cursor-pointer">
+                <span class="w-36">Selection variant</span>
+                <span class="sap-sig-input w-36"></span>
+              </div>
+            </div>
+            ${statusBar('VT01N')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'VL06C') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'Outbound Deliveries for Confirmation')}
+            <div onclick="setStep(0)" class="sap-sig-toolbar px-3 py-1 flex items-center gap-2 cursor-pointer">
+              <span class="sap-sig-btn">🕒 Execute</span>
+              <span class="sap-sig-btn">⚙️ Confirm in Background</span>
+            </div>
+            <div class="p-2.5 space-y-1.5 flex-1">
+              <div onclick="setStep(1)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Organizat. Data</div>
+                <div class="p-1.5 flex items-center"><span class="w-44">Shipping Point/Receiving Pt</span><span class="sap-sig-input sap-sig-input-focus w-14"></span><span class="mx-2">to</span><span class="sap-sig-input w-14"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+              </div>
+              <div onclick="setStep(2)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Time Data</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-44">Picking Date</span><span class="sap-sig-input w-20"></span><span class="mx-2">to</span><span class="sap-sig-input w-20"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-44">Pland Gds Mvmnt Date</span><span class="sap-sig-input w-20 font-bold">19.10.2026</span><span class="mx-2">to</span><span class="sap-sig-input w-20 font-bold">27.10.2026</span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Partner & Shipment Data</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-44">Forwarding Agent</span><span class="sap-sig-input w-24"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-44">Route / Shipment Number</span><span class="sap-sig-input w-24"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(4)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Status & Display Options</div>
+                <div class="p-1.5 flex flex-wrap gap-4"><span>☐ Read Unchecked Deliveries</span><span>☐ Determine Number of Items</span><span>☐ Display Fwding Agent</span></div>
+              </div>
+            </div>
+            ${statusBar('VL06C')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'VL06P') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'Outbound Deliveries for Picking')}
+            <div onclick="setStep(0)" class="sap-sig-toolbar px-3 py-1 flex items-center gap-2 cursor-pointer">
+              <span class="sap-sig-btn">🕒 Execute</span>
+              <span class="sap-sig-btn">⚙️ Create TO in Background</span>
+            </div>
+            <div class="p-2.5 space-y-1.5 flex-1">
+              <div onclick="setStep(1)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Organizat. Data & Time Data</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-44">Shipping Point/Receiving Pt</span><span class="sap-sig-input sap-sig-input-focus w-14"></span><span class="mx-2">to</span><span class="sap-sig-input w-14"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-44">Picking Date</span><span class="sap-sig-input w-20 font-bold">19.10.2026</span><span class="mx-2">to</span><span class="sap-sig-input w-20 font-bold">27.10.2026</span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(2)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Picking Data</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex flex-wrap gap-3"><span>○ Only Picking Without WM</span><span>○ Only WM Picking</span><span class="font-bold">◉ Both Picking Types</span></div>
+                  <div class="flex items-center"><span class="w-44">Warehouse Number</span><span class="sap-sig-input w-12"></span><span class="ml-4 font-bold">◉ Check at Item Level</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Material Data & Production Supply</div>
+                <div class="p-1.5 flex items-center"><span class="w-44">Batch / Prodn Supply Area</span><span class="sap-sig-input w-24"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+              </div>
+              <div onclick="setStep(4)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Shipment Data</div>
+                <div class="p-1.5 flex items-center"><span class="w-44">Route / Shipment / HU</span><span class="sap-sig-input w-32"></span><span class="mx-2">to</span><span class="sap-sig-input w-32"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+              </div>
+            </div>
+            ${statusBar('VL06P')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'VL06O') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'Outbound Delivery Monitor')}
+            <div class="sap-sig-toolbar px-3 py-1 flex items-center gap-3 text-[10px]">
+              <span>📂 Display Variants</span><span>Only Inbound Deliveries</span><span>Only Outbound Deliveries</span><span>All Deliveries</span>
+            </div>
+            <div class="p-3 flex-1">
+              <div class="sap-sig-frame max-w-md p-3 space-y-1.5">
+                <div class="sap-sig-frame-title -mx-3 -mt-3 mb-2">Outbound Deliveries - Selection Type</div>
+                <div class="flex flex-col gap-1.5 w-48">
+                  <button onclick="setStep(0)" class="sap-sig-btn py-1">For Checking</button>
+                  <button onclick="setStep(0)" class="sap-sig-btn py-1">For Distribution</button>
+                  <button onclick="setStep(1)" class="sap-sig-btn py-1">For Picking</button>
+                  <button onclick="setStep(2)" class="sap-sig-btn py-1">For Confirmation</button>
+                  <button onclick="setStep(3)" class="sap-sig-btn py-1">For Loading</button>
+                  <button onclick="setStep(3)" class="sap-sig-btn py-1">For Goods Issue</button>
+                  <button onclick="setStep(4)" class="sap-sig-btn py-1">For Transport. Planning</button>
+                  <button onclick="setStep(4)" class="sap-sig-btn py-1 mt-2">List Outbound Deliveries</button>
+                </div>
+              </div>
+            </div>
+            ${statusBar('VL06O')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'ZPACKCONF') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['File', 'System', 'Help'], 'Packing Cockpit')}
+            <div class="p-2.5 space-y-2 flex-1 overflow-x-auto">
+              <div class="grid grid-cols-12 gap-2 text-[10px]">
+                <div onclick="setStep(0)" class="col-span-6 space-y-1 cursor-pointer">
+                  <div class="flex items-center gap-1">
+                    <span>Shipment Status:</span>
+                    ${[1,2,3,4,5,6,7].map(n => `<span class="sap-sig-btn px-1.5 py-0">${n}</span>`).join('')}
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span>Shipment no.</span>
+                    <span class="sap-sig-input sap-sig-input-focus w-20"></span>
+                    <span class="sap-sig-btn">🖨️ ZPRN</span>
+                    <span class="sap-sig-btn">Clear</span>
+                  </div>
+                  <div onclick="event.stopPropagation(); setStep(1)" class="space-y-1 pt-0.5">
+                    <div><span class="sap-sig-btn">CSL Label verification</span></div>
+                    <div class="flex gap-1">
+                      <span class="sap-sig-btn">Create Shipment</span>
+                      <span class="sap-sig-btn">Change Shipment</span>
+                      <span class="sap-sig-btn">Display Shipment</span>
+                    </div>
+                  </div>
+                </div>
+                <div onclick="setStep(2)" class="col-span-6 space-y-1 cursor-pointer">
+                  <div class="flex items-center"><span class="w-16">Weight:</span><span class="sap-sig-input w-36 bg-slate-100"></span></div>
+                  <div class="flex items-center"><span class="w-16">Volume:</span><span class="sap-sig-input w-36 bg-slate-100"></span></div>
+                  <div>Packing Status: 🔴🟡🟢 | Picking Status: 🔴🟡🟢</div>
+                </div>
+              </div>
+
+              <div onclick="setStep(3)" class="border border-slate-400 bg-white cursor-pointer">
+                <table class="w-full text-[9.5px] border-collapse">
+                  <thead>
+                    <tr class="bg-slate-200 border-b border-slate-400">
+                      <th class="p-1 border-r border-slate-300">Delivery no.</th>
+                      <th class="p-1 border-r border-slate-300">Pack St.</th>
+                      <th class="p-1 border-r border-slate-300">Pick St.</th>
+                      <th class="p-1 border-r border-slate-300"># HUs</th>
+                      <th class="p-1 border-r border-slate-300">QA</th>
+                      <th class="p-1"># LTs</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${[1,2,3,4].map(() => `
+                      <tr class="border-b border-slate-200 bg-blue-50/40">
+                        <td class="p-0.5 border-r border-slate-300 bg-white h-5"></td>
+                        <td class="p-0.5 border-r border-slate-300"></td>
+                        <td class="p-0.5 border-r border-slate-300"></td>
+                        <td class="p-0.5 border-r border-slate-300 text-center"><span class="sap-sig-btn py-0 px-1.5">Auto-pack</span></td>
+                        <td class="p-0.5 border-r border-slate-300 text-center"><span class="sap-sig-btn py-0 px-1.5">🖨️ ZPRN</span></td>
+                        <td class="p-0.5"></td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="grid grid-cols-6 gap-1 pt-1 text-[9px]">
+                <div onclick="setStep(4)" class="space-y-1 cursor-pointer">
+                  <div class="sap-sig-btn w-full">🖨️ Print labels</div>
+                  <div>CSL ☐ | Shipper ☐</div>
+                </div>
+                <div onclick="setStep(4)" class="space-y-1 cursor-pointer">
+                  <div class="sap-sig-btn w-full">RF Box Packing</div>
+                  <div class="sap-sig-btn w-full">Audit LT to CSL HU</div>
+                  <div class="sap-sig-btn w-full">Workstation PID</div>
+                </div>
+                <div onclick="setStep(4)" class="space-y-1 cursor-pointer">
+                  <div class="sap-sig-btn w-full">RF Pallet Packing</div>
+                  <div class="sap-sig-btn w-full">ZOUT</div>
+                  <div class="sap-sig-btn w-full">Print Inner CSL</div>
+                </div>
+                <div onclick="setStep(4)" class="space-y-1 cursor-pointer">
+                  <div class="sap-sig-btn w-full opacity-70">DO NOT USE</div>
+                  <div class="sap-sig-btn w-full">Process HL Shipment</div>
+                  <div class="sap-sig-btn w-full">Pack by 3S</div>
+                </div>
+                <div onclick="setStep(5)" class="space-y-1 cursor-pointer">
+                  <div class="sap-sig-btn w-full">Mass Change</div>
+                  <div class="sap-sig-btn w-full opacity-70">DO NOT USE</div>
+                  <div class="sap-sig-btn w-full">Print CSL by LT</div>
+                </div>
+                <div onclick="setStep(5)" class="space-y-1 cursor-pointer">
+                  <div class="sap-sig-btn w-full">Load Control</div>
+                  <div class="sap-sig-btn w-full">Load HU</div>
+                  <div class="sap-sig-btn w-full">Unload HU</div>
+                </div>
+              </div>
+            </div>
+            ${statusBar('ZPACKCONF')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'ZMM4TR093') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'Warehouse Picking Performance Report')}
+            <div class="p-2.5 space-y-1.5 flex-1">
+              <div onclick="setStep(0)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Please input Selection Criteria</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-44">Warehouse / Plant</span><span class="sap-sig-input sap-sig-input-focus w-12"></span><span class="sap-sig-input w-14 ml-2"></span></div>
+                  <div class="flex items-center"><span class="w-44">TO Completed Date & Time</span><span class="sap-sig-input w-20"></span><span class="mx-2">to</span><span class="sap-sig-input w-20"></span><span class="sap-sig-input w-16 ml-2">00:00:00</span></div>
+                  <div onclick="event.stopPropagation(); setStep(1)" class="pt-1">◉ TO Confirmation Date | ○ Pick Confirmation Date</div>
+                </div>
+              </div>
+              <div onclick="setStep(2)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Additional Selection</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-44">Transfer Order / Delivery</span><span class="sap-sig-input w-24"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-44">License Tag (3S/4S) / User ID</span><span class="sap-sig-input w-28"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Select Desired Parameters</div>
+                <div class="p-1.5 flex gap-4"><span>◉ 3S/4S Summary</span><span>○ 3S/4S Details</span><span>☐ Show Sales Order</span></div>
+              </div>
+              <div onclick="setStep(4)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Download File</div>
+                <div class="p-1.5">☐ Download File | Code Page <span class="sap-sig-input w-12">4110</span> | Path <span class="sap-sig-input w-32">/te/wm/usr/</span> | <span class="sap-sig-input w-24">ZMM4R093</span></div>
+              </div>
+            </div>
+            ${statusBar('ZMM4TR093')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'MB51') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'Material Document List')}
+            <div class="p-2.5 space-y-1.5 flex-1">
+              <div onclick="setStep(0)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Item Data</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-36">Material</span><span class="sap-sig-input sap-sig-input-focus w-36"></span><span class="mx-2">to</span><span class="sap-sig-input w-36"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-36">Plant / SLoc / Batch</span><span class="sap-sig-input w-14"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div onclick="event.stopPropagation(); setStep(1)" class="flex items-center"><span class="w-36">Movement Type</span><span class="sap-sig-input w-12"></span><span class="mx-2">to</span><span class="sap-sig-input w-12"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(2)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Header Data</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-36">Posting Date</span><span class="sap-sig-input w-24"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-36">User Name / Reference</span><span class="sap-sig-input w-24"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Display Options & Data Source</div>
+                <div class="p-1.5 flex items-center gap-4"><span>◉ Hierarchy List</span><span>○ Flat List</span><span>Layout <span class="sap-sig-input w-28">/DEFAULT+BC</span></span><span>☑ Database</span></div>
+              </div>
+            </div>
+            ${statusBar('MB51')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'ZMM4TR021') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'License Tag Report')}
+            <div class="p-2.5 space-y-1.5 flex-1">
+              <div onclick="setStep(0)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Report Selection Criteria</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-44">Carton License Tag</span><span class="sap-sig-input sap-sig-input-focus w-28"></span><span class="mx-2">to</span><span class="sap-sig-input w-28"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-44">Pallet / Shipment LT</span><span class="sap-sig-input w-28"></span><span class="mx-2">to</span><span class="sap-sig-input w-28"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div onclick="event.stopPropagation(); setStep(1)" class="flex items-center"><span class="w-44">Material / Country of Origin</span><span class="sap-sig-input w-28"></span><span class="mx-2">SD Doc:</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div onclick="event.stopPropagation(); setStep(2)" class="flex items-center"><span class="w-44">Warehouse / Storage Bin</span><span class="sap-sig-input w-12"></span><span class="mx-2">Bin:</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Download Option</div>
+                <div class="p-1.5 space-y-1">
+                  <div>☐ Download To PC | Code Page <span class="sap-sig-input w-12">4110</span> | Path <span class="sap-sig-input w-44">c:\\ZLICTAG1.xls</span></div>
+                  <div>☐ Output to Email | ☐ Download To Unix (<span class="sap-sig-input w-28">/te/wm/usr/</span>)</div>
+                </div>
+              </div>
+              <div onclick="setStep(4)" class="px-1 font-bold cursor-pointer">
+                Add info from ZINCUSTOMS table ☐
+              </div>
+            </div>
+            ${statusBar('ZMM4TR021')}
+          </div>
+        `;
+      }
+
+      if (tpl === 'MB52') {
+        return `
+          <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+            ${topChrome(['Program', 'Edit', 'Goto', 'System', 'Help'], 'Display Warehouse Stocks of Material')}
+            <div class="p-2.5 space-y-1.5 flex-1">
+              <div onclick="setStep(0)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Database Selections</div>
+                <div class="p-1.5 space-y-1">
+                  <div class="flex items-center"><span class="w-36">Material</span><span class="sap-sig-input sap-sig-input-focus w-36"></span><span class="mx-2">to</span><span class="sap-sig-input w-36"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                  <div class="flex items-center"><span class="w-36">Plant / SLoc / Batch</span><span class="sap-sig-input w-14"></span><span class="mx-2">to</span><span class="sap-sig-input w-24"></span><span class="sap-sig-multibtn ml-2">⇨</span></div>
+                </div>
+              </div>
+              <div onclick="setStep(1)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Scope of List & Special Stocks</div>
+                <div class="p-1.5 flex items-center justify-between"><span>Material Type / Group <span class="sap-sig-input w-16"></span></span><span>☐ Also Select Special Stocks</span></div>
+              </div>
+              <div onclick="setStep(2)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Settings</div>
+                <div class="p-1.5 grid grid-cols-2 gap-1">
+                  <div>☐ Display Negative Stocks Only</div>
+                  <div>☐ Display Batch Stocks</div>
+                  <div>☐ No zero stock lines</div>
+                  <div>☐ Do Not Display Values</div>
+                </div>
+              </div>
+              <div onclick="setStep(3)" class="sap-sig-frame max-w-xl cursor-pointer">
+                <div class="sap-sig-frame-title">Display Options</div>
+                <div class="p-1.5 flex gap-6"><span>◉ Hierarchical Representation</span><span>○ Non-Hierarchical Representation</span></div>
+              </div>
+            </div>
+            ${statusBar('MB52')}
+          </div>
+        `;
+      }
+
+      // Generic SAP GUI Signature Window for other T-Codes (VA01, VL01N, VL02N, MIGO, etc.)
+      return `
+        <div dir="ltr" class="sap-sig-window w-full min-h-[410px] sm:min-h-[460px] flex flex-col justify-between">
+          ${topChrome(['System', 'Edit', 'Goto', 'Environment', 'Help'], `${t.code} - ${t.titleEn}`)}
+          <div class="p-3 space-y-2 flex-1">
+            ${t.steps.map((s, idx) => `
+              <div onclick="setStep(${idx})" class="sap-sig-frame max-w-xl cursor-pointer ${idx === activeStepIndex ? 'sap-field-highlight' : ''}">
+                <div class="sap-sig-frame-title">Step ${s.num}: ${s.field}</div>
+                <div class="p-2 flex items-center justify-between">
+                  <span class="font-semibold">${s.title}</span>
+                  <span class="sap-sig-input ${idx === 0 ? 'sap-sig-input-focus' : ''} w-36">${t.code}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          ${statusBar(t.code)}
+        </div>
+      `;
+    }
+
+    function renderInteractiveSapScreen() {
+      const t = SAP_TRANSACTIONS[activeTcodeIndex];
+      const wrapper = document.getElementById('sapScreenWrapper');
+
+      const svgArrowsHtml = showArrowsOverlay
+        ? `
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none z-20">
+          <defs>
+            <marker id="sapArrowHead" markerWidth="6" markerHeight="6" refX="4.8" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#f59e0b" />
+            </marker>
+            <marker id="sapArrowHeadActive" markerWidth="7" markerHeight="7" refX="5.2" refY="3.5" orient="auto">
+              <path d="M0,0 L7,3.5 L0,7 Z" fill="#22c55e" />
+            </marker>
+          </defs>
+          ${t.steps.map((s, idx) => {
+            const isAct = idx === activeStepIndex;
+            return `
+              <line
+                x1="${s.arrowFromX}"
+                y1="${s.arrowFromY}"
+                x2="${s.x}"
+                y2="${s.y}"
+                stroke="${isAct ? '#22c55e' : '#f59e0b'}"
+                stroke-width="${isAct ? '1.4' : '0.85'}"
+                class="${isAct ? 'arrow-animated' : 'opacity-80'}"
+                marker-end="url(#${isAct ? 'sapArrowHeadActive' : 'sapArrowHead'})"
+              />
+            `;
+          }).join('')}
+        </svg>
+      `
+        : '';
+
+      const numberedBadgesHtml = t.steps.map((s, idx) => {
+        const isAct = idx === activeStepIndex;
+        return `
+          <button
+            onclick="setStep(${idx})"
+            style="left: ${s.arrowFromX}%; top: ${s.arrowFromY}%; transform: translate(-50%, -50%);"
+            class="absolute z-30 w-8 h-8 rounded-full font-mono font-black text-xs flex items-center justify-center border-2 transition cursor-pointer shadow-xl ${
+              isAct
+                ? 'step-badge-active'
+                : 'bg-slate-900/95 text-amber-400 border-amber-400 hover:scale-110'
+            }"
+          >
+            ${s.num}
+          </button>
+        `;
+      }).join('');
+
+      const savedPhotoUrl = t.imageFileName ? UPLOADED_PHOTO_MAP[t.imageFileName] : t.customImageUrl;
+      const replicaHtml = buildSapps4app009ScreenHtml(t);
+
+      if (preferPhotoMode && savedPhotoUrl) {
+        wrapper.innerHTML = `
+          <div class="relative w-full min-h-[410px] sm:min-h-[460px] bg-slate-950 flex items-center justify-center">
+            <img src="${savedPhotoUrl}" alt="${t.code}" class="w-full h-auto max-h-[480px] object-contain" />
+            ${svgArrowsHtml}
+            ${numberedBadgesHtml}
+          </div>
+        `;
+        return;
+      }
+
+      wrapper.innerHTML = `
+        <div class="relative w-full min-h-[410px] sm:min-h-[460px]">
+          ${
+            preferPhotoMode && t.imageFileName
+              ? `<img
+                  src="${t.imageFileName}"
+                  alt="${t.code}"
+                  class="w-full h-auto max-h-[480px] object-contain"
+                  onload="this.nextElementSibling.style.display='none'"
+                  onerror="this.style.display='none'"
+                />`
+              : ''
+          }
+          <div>${replicaHtml}</div>
+          ${svgArrowsHtml}
+          ${numberedBadgesHtml}
+        </div>
+      `;
+    }
+
+    // 9. RENDER STEPS LIST & NAVIGATION
+    function renderStepsList() {
+      const t = SAP_TRANSACTIONS[activeTcodeIndex];
+      const container = document.getElementById('stepsListContainer');
+      document.getElementById('stepProgressLabel').textContent = `الخطوة ${activeStepIndex + 1} من ${t.steps.length}`;
+
+      container.innerHTML = t.steps.map((s, idx) => {
+        const isAct = idx === activeStepIndex;
+        return `
+          <div
+            onclick="setStep(${idx})"
+            class="p-3 rounded-xl border cursor-pointer transition ${
+              isAct
+                ? 'bg-emerald-500/15 border-emerald-500 shadow-md'
+                : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 hover:border-amber-400'
+            }"
+          >
+            <div class="flex items-start gap-2.5">
+              <span class="w-6 h-6 rounded-full font-mono font-black text-xs flex items-center justify-center shrink-0 ${
+                isAct ? 'bg-emerald-500 text-slate-950' : 'bg-amber-500 text-slate-950'
+              }">${s.num}</span>
+              <div class="space-y-1 flex-1">
+                <div class="font-extrabold text-xs sm:text-sm">${s.title}</div>
+                <div class="inline-block px-2 py-0.5 rounded bg-slate-900 text-amber-300 font-mono text-[10px]">${s.field}</div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">${s.desc}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setStep(idx) {
+      activeStepIndex = idx;
+      renderInteractiveSapScreen();
+      renderStepsList();
+    }
+
+    function nextStep() {
+      const t = SAP_TRANSACTIONS[activeTcodeIndex];
+      setStep((activeStepIndex + 1) % t.steps.length);
+    }
+
+    function prevStep() {
+      const t = SAP_TRANSACTIONS[activeTcodeIndex];
+      setStep((activeStepIndex - 1 + t.steps.length) % t.steps.length);
+    }
+
+    function toggleArrowsVisibility() {
+      showArrowsOverlay = !showArrowsOverlay;
+      renderInteractiveSapScreen();
+    }
+
+    function togglePhotoVsReplicaMode() {
+      preferPhotoMode = !preferPhotoMode;
+      renderInteractiveSapScreen();
+    }
+
+    // 10. LIFECYCLE PIPELINE & EXPORT HUB RENDERERS
+    function renderLifecyclePipeline() {
+      const grid = document.getElementById('lifecyclePipelineGrid');
+      grid.innerHTML = LIFECYCLE_STAGES.map(st => {
+        const isAct = st.id === activeLifecycleStageId;
+        return `
+          <button
+            onclick="selectLifecycleStage(${st.id})"
+            class="p-3 rounded-xl border text-right transition flex flex-col justify-between gap-1 ${
+              isAct
+                ? 'bg-emerald-500 text-slate-950 border-emerald-400 font-black shadow-lg'
+                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-emerald-400'
+            }"
+          >
+            <span class="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded w-fit ${
+              isAct ? 'bg-slate-950 text-emerald-400' : 'bg-emerald-500/15 text-emerald-500'
+            }">${st.badge}</span>
+            <div class="text-xs font-extrabold leading-snug">${st.title}</div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectLifecycleStage(stageId) {
+      activeLifecycleStageId = stageId;
+      renderLifecyclePipeline();
+      const st = LIFECYCLE_STAGES.find(s => s.id === stageId);
+      const card = document.getElementById('lifecycleStageDetailCard');
+      card.innerHTML = `
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-500">${st.badge}</span>
+              <h3 class="text-base sm:text-xl font-black mt-1">${st.title}</h3>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-mono bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl">
+              <span class="text-amber-500">${st.stockFrom}</span>
+              <i class="fa-solid fa-arrow-left text-emerald-500"></i>
+              <span class="text-emerald-500 font-bold">${st.stockTo}</span>
+            </div>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">${st.desc}</p>
+          <div class="space-y-2">
+            <div class="text-xs font-bold text-slate-500">المعاملات والشاشات المرتبطة بهذه المرحلة (اضغط لفتح الشاشة بالأسهم):</div>
+            <div class="flex flex-wrap gap-2">
+              ${st.tcodes.map(code => {
+                const idx = SAP_TRANSACTIONS.findIndex(t => t.code === code);
+                return `
+                  <button
+                    onclick="openTcodeFromStage(${idx})"
+                    class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-mono font-black text-xs transition shadow"
+                  >
+                    <i class="fa-solid fa-up-right-from-square ml-1"></i>${code}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function openTcodeFromStage(idx) {
+      if (idx === -1) return;
+      switchMainTab('explorer');
+      selectTransaction(idx);
+    }
+
+    function renderExportHubCards() {
+      const grid = document.getElementById('exportHubCardsGrid');
+      const exportList = SAP_TRANSACTIONS.map((t, idx) => ({ ...t, idx })).filter(t => t.isExport);
+      grid.innerHTML = exportList.map(t => `
+        <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 shadow flex flex-col justify-between gap-3">
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-1 rounded-lg bg-rose-500 text-white font-mono font-black text-xs">${t.code}</span>
+              <span class="text-[11px] font-mono text-slate-400">${t.imageFileName || t.module}</span>
+            </div>
+            <h3 class="font-black text-sm">${getLocalizedTitle(t)}</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">${t.mvtSummary}</p>
+          </div>
+          <button
+            onclick="openTcodeFromStage(${t.idx})"
+            class="w-full py-2 rounded-xl bg-slate-900 dark:bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white text-xs font-bold transition"
+          >
+            فتح الشاشة والخطوات المرقمة (${t.steps.length} خطوات)
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // 11. ANNOTATION STUDIO FUNCTIONS
+    function handleStudioImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        studioUploadedDataUrl = e.target.result;
+        document.getElementById('studioPreviewImg').src = studioUploadedDataUrl;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleStudioCanvasClick(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = Math.round(((event.clientX - rect.left) / rect.width) * 100);
+      const y = Math.round(((event.clientY - rect.top) / rect.height) * 100);
+      const num = studioCustomSteps.length + 1;
+      const arrowFromX = Math.max(6, Math.min(94, x - 14));
+      const arrowFromY = Math.max(6, Math.min(94, y - 10));
+
+      studioCustomSteps.push({
+        num,
+        title: `الخطوة رقم ${num}`,
+        field: `Field ${num}`,
+        desc: 'أدخل القيمة المطلوبة في هذا الحقل.',
+        x,
+        y,
+        arrowFromX,
+        arrowFromY
+      });
+      renderStudioAnnotations();
+    }
+
+    function renderStudioAnnotations() {
+      const overlay = document.getElementById('studioOverlayLayer');
+      const list = document.getElementById('studioStepsList');
+      const jsonOut = document.getElementById('studioJsonOutput');
+
+      overlay.innerHTML = `
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full">
+          <defs>
+            <marker id="stArrow" markerWidth="6" markerHeight="6" refX="4.8" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#22c55e" />
+            </marker>
+          </defs>
+          ${studioCustomSteps.map(s => `
+            <line x1="${s.arrowFromX}" y1="${s.arrowFromY}" x2="${s.x}" y2="${s.y}" stroke="#22c55e" stroke-width="1.2" marker-end="url(#stArrow)" />
+          `).join('')}
+        </svg>
+        ${studioCustomSteps.map(s => `
+          <div style="left:${s.arrowFromX}%; top:${s.arrowFromY}%; transform:translate(-50%,-50%);" class="absolute w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-mono font-black text-xs flex items-center justify-center border-2 border-white shadow">
+            ${s.num}
+          </div>
+        `).join('')}
+      `;
+
+      list.innerHTML = studioCustomSteps.map((s, idx) => `
+        <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg text-xs">
+          <span class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-mono font-black flex items-center justify-center">${s.num}</span>
+          <input
+            type="text"
+            value="${s.title}"
+            oninput="studioCustomSteps[${idx}].title = this.value; updateStudioJson();"
+            class="flex-1 bg-transparent border-b border-slate-400 focus:outline-none text-xs"
+          />
+        </div>
+      `).join('');
+
+      updateStudioJson();
+    }
+
+    function updateStudioJson() {
+      const code = document.getElementById('studioTcodeInput').value.trim().toUpperCase() || 'ZCUSTOM';
+      const titleAr = document.getElementById('studioTitleInput').value.trim() || 'شاشة SAP مخصصة';
+      document.getElementById('studioJsonOutput').value = JSON.stringify({ code, titleAr, steps: studioCustomSteps }, null, 2);
+    }
+
+    function clearStudioSteps() {
+      studioCustomSteps = [];
+      renderStudioAnnotations();
+    }
+
+    function saveStudioLessonToPlatform() {
+      const code = document.getElementById('studioTcodeInput').value.trim().toUpperCase() || `ZNEW${SAP_TRANSACTIONS.length + 1}`;
+      const titleAr = document.getElementById('studioTitleInput').value.trim() || `معاملة ${code}`;
+      SAP_TRANSACTIONS.unshift({
+        code,
+        module: 'EWM',
+        isExport: true,
+        customImageUrl: studioUploadedDataUrl,
+        fioriId: code,
+        titleAr,
+        titleEn: titleAr,
+        titleFr: titleAr,
+        stageId: 6,
+        mvtSummary: 'شاشة مخصصة تمت إضافتها من استوديو ترقيم الصور.',
+        errorTroubleshooting: 'تأكد من إدخال الحقول الإلزامية بالترتيب.',
+        steps: studioCustomSteps.length ? [...studioCustomSteps] : [{ num: 1, title: 'الخطوة 1', field: 'Field 1', desc: 'شرح الخطوة', x: 30, y: 30, arrowFromX: 15, arrowFromY: 15 }]
+      });
+      renderTcodeCards();
+      switchMainTab('explorer');
+      selectTransaction(0);
+      showToast(`تمت إضافة المعاملة ${code} إلى المنصة بنجاح!`);
+    }
+
+    // 12. TAB SWITCHING, LANGUAGE, DARK MODE & CLIPBOARD HELPERS
+    function switchMainTab(tabId) {
+      ['explorer', 'lifecycle', 'exporthub', 'studio', 'prompt'].forEach(id => {
+        document.getElementById(`tabSection-${id}`).classList.toggle('hidden', id !== tabId);
+      });
+      document.querySelectorAll('.main-nav-btn').forEach(btn => {
+        const active = btn.getAttribute('data-tab') === tabId;
+        if (btn.parentElement.tagName === 'NAV') {
+          btn.classList.toggle('bg-amber-500', active);
+          btn.classList.toggle('text-slate-950', active);
+          btn.classList.toggle('text-slate-300', !active);
+        } else {
+          btn.classList.toggle('text-amber-400', active);
+        }
+      });
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      ['ar', 'fr', 'en'].forEach(l => {
+        const b = document.getElementById(`langBtn-${l}`);
+        b.className = l === lang ? 'px-2 py-1 rounded-md bg-amber-500 text-slate-950' : 'px-2 py-1 rounded-md text-slate-300 hover:text-white';
+      });
+      renderUserTenScreensStrip();
+      renderTcodeCards(document.getElementById('tcodeSearchInput').value.trim().toLowerCase());
+      selectTransaction(activeTcodeIndex, activeStepIndex, false);
+      renderExportHubCards();
+    }
+
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      document.getElementById('themeIcon').className = isDark ? 'fa-solid fa-sun text-xs' : 'fa-solid fa-moon text-xs';
+    }
+
+    function copyTextHelper(text, msg) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast(msg);
+    }
+
+    function copyMasterPrompt() {
+      copyTextHelper(document.getElementById('masterPromptBox').textContent, 'تم نسخ البرومبت الهندسي النهائي!');
+    }
+
+    function copyStudioJson() {
+      copyTextHelper(document.getElementById('studioJsonOutput').value, 'تم نسخ كود JSON بنجاح!');
+    }
+
+    function showToast(message) {
+      const box = document.getElementById('toastBox');
+      box.textContent = message;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 3000);
+    }
+  </script>
+</body>
+</html>
